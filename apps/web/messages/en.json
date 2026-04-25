@@ -84,6 +84,57 @@
       "cancelled": "Cancelled"
     }
   },
+  "onboarding": {
+    "title": "KYB verification",
+    "subtitle": "A few minutes to confirm your business. Multiple providers in parallel.",
+    "step1": {
+      "title": "Business information",
+      "subtitle": "These details are verified against official registries (CAC Nigeria, Tianyancha China).",
+      "legalName": "Legal name",
+      "country": "Country",
+      "countries": {
+        "NG": "🇳🇬 Nigeria",
+        "CN": "🇨🇳 China"
+      },
+      "cacNumber": "CAC number (Nigeria)",
+      "bvn": "BVN",
+      "bvnHint": "Bank Verification Number — 11 digits",
+      "businessLicense": "Business license number"
+    },
+    "step2": {
+      "title": "Documents",
+      "subtitle": "Upload your supporting docs — encrypted at-rest in Supabase Vault.",
+      "cacCert": "CAC certificate",
+      "proofOfAddress": "Proof of address (utility bill or lease)",
+      "note": "These uploads are simulated in the hackathon demo — Supabase Storage will be wired in production."
+    },
+    "step3": {
+      "title": "Verification in progress",
+      "subtitle": "We're querying our providers in parallel. Watch the live status below."
+    },
+    "providers": {
+      "title": "Verification providers",
+      "smile_id": {
+        "label": "Smile ID",
+        "description": "KYC Nigeria + BVN ↔ ID photo match"
+      },
+      "comply_advantage": {
+        "label": "ComplyAdvantage",
+        "description": "Global sanctions + PEP screening"
+      },
+      "tianyancha": {
+        "label": "Tianyancha",
+        "description": "Chinese business registry (天眼查)"
+      },
+      "allApproved": "✓ All providers approved. Your account is ready to transact."
+    },
+    "cta": {
+      "next": "Next",
+      "previous": "Back",
+      "submit": "Run verification",
+      "dashboard": "Go to dashboard"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."
   }

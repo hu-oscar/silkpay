@@ -7,22 +7,27 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 
 ## 🏗️ Active Phase & Goal
 
-**Current Phase:** Phase 2 — KYB onboarding (Feature 1)
+**Current Phase:** Phase 3 — Document intake Claude Vision (Feature 2)
 
-**Current Task:** Wizard 3 étapes mobile-first avec Zod + simulation provider 3s → status approved en realtime.
+**Current Task:** Upload proforma PDF → Anthropic Claude Sonnet vision parse → champs structurés streamés dans l'UI.
 
 **Next Steps:**
 
-1. `/[locale]/onboarding/page.tsx` — wizard 3 steps (business-info, documents, verification).
-2. Schemas Zod : CAC Nigeria format, BVN 11 digits, legal name, country.
-3. Simulation provider via Server Action : insert `kyb_applications` pending → setTimeout 3s → approved.
-4. Polling/refresh côté client (Supabase realtime indisponible en mode in-memory ; on simule via `revalidatePath` ou `useEffect` polling).
-5. Forced 中文 supplier flow : `/[locale]/onboarding?role=supplier` ou route séparée.
+1. Drag-drop upload zone sur `/transactions/new` step 1.
+2. Server Action `parseProforma(file)` → Claude vision API avec Zod schema en structured outputs.
+3. UI streaming Framer Motion : champs apparaissent un par un.
+4. Sauvegarde dans `transactions.parsed_documents` JSONB.
+5. 3-4 PDFs proforma de test dans `samples/` pour la démo.
 
-**Phase 2 exit criteria:**
+**Phase 3 exit criteria:**
 
-- Form passe la validation Zod, status passe pending → approved en live (sans refresh manuel).
-- `organizations.kyb_status` modifié en mémoire et reflété dans le dashboard KPIs.
+- Upload d'un sample PDF → 5-10s plus tard, ~30 champs structurés (HSC, parties, montants) visibles.
+- Confidence score affiché. Si <0.85, badge "Manual review recommended".
+- `transactions` row créée avec parsed_documents JSONB hydraté.
+
+**Manual setup needed before Phase 3:**
+
+- Add `ANTHROPIC_API_KEY` to `apps/web/.env.local`.
 
 ## 📂 Architectural Decisions
 
@@ -51,12 +56,26 @@ _(Log current bugs or weird workarounds here. Empty at project init.)_
 - [x] **Phase 0** — Scaffolding monorepo (pnpm + Next.js 16 + Foundry + Python venv + Husky)
 - [x] **Phase 1** — DB schema + fake-user system + dashboard stub (in-memory store)
 - [x] **Phase 1.5** — Swap in-memory → **Supabase Postgres** (queries.ts now hits real DB; in-memory store removed)
-- [ ] Phase 2 — KYB onboarding (Feature 1)
+- [x] **Phase 2** — KYB onboarding wizard with **Supabase Realtime providers panel**
+- [ ] Phase 3 — Document intake Claude Vision (Feature 2)
 - [ ] Phase 3 — Document Intake Claude Vision (Feature 2)
 - [ ] Phase 4 — Quote Engine + SOR CVXPY (Features 3 + 6)
 - [ ] Phase 5 — Smart Contract Escrow on BSC testnet (Feature 4)
 - [ ] Phase 6 — Dashboard + transaction detail (Feature 5)
 - [ ] Phase 7 — Vue supplier + polish + seed + recording prep
+
+### Phase 2 deliverables (reference) — KYB onboarding wizard
+
+- **Manual user setup needed once**: run `supabase/migrations/0002_enable_realtime.sql` in the Supabase SQL Editor — `ALTER PUBLICATION supabase_realtime ADD TABLE kyb_applications, organizations, transactions, tranches;`. Without this, realtime subscriptions silently no-op.
+- Pages :
+  - `apps/web/src/app/[locale]/onboarding/page.tsx` — Server Component, hydrates wizard with current org's seeded values.
+  - `apps/web/src/app/[locale]/onboarding/onboarding-wizard.tsx` — Client Component, 3-step wizard with progress bar, react-hook-form + Zod resolver.
+- Form validation : `lib/kyb/schemas.ts` — `BusinessInfoSchema` with country-conditional rules (NG → CAC `RC-XXXXXXX` + BVN 11 digits ; CN → business license 15-18 chars).
+- Server Action : `lib/kyb/actions.ts#submitKyb` — sets org `kyb_status='pending'`, inserts 3 `kyb_applications` rows (one per provider: smile_id, comply_advantage, tianyancha), then sequentially flips each to `approved` with a 1.2 s stagger (~3.6 s total, well under Vercel's 10 s function budget). Final org status = `approved`.
+- Live verification panel : `components/kyb-live-status.tsx` — Client Component subscribes to `kyb_applications` via Supabase Realtime channel `kyb_org_${orgId}`, animates each provider badge from `Idle` → `Verifying…` → `Approved` as rows update.
+- Step 2 docs upload is **simulated visually** (no Supabase Storage wiring) — fake `<FakeUpload>` button with 700 ms timeout. Production wiring deferred.
+- Full i18n FR/EN/zh under `onboarding` namespace + `onboarding.providers` sub-namespace for the live panel.
+- Validation: typecheck ✓, build ✓ (12 routes including `/{fr,en,zh}/onboarding`), `/fr/onboarding` returns 200 with all wizard step-1 fields rendered.
 
 ### Phase 1.5 deliverables (reference) — Supabase wiring
 

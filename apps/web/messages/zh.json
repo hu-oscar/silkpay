@@ -84,6 +84,57 @@
       "cancelled": "已取消"
     }
   },
+  "onboarding": {
+    "title": "KYB 认证",
+    "subtitle": "几分钟即可确认企业身份。多家服务商并行验证。",
+    "step1": {
+      "title": "企业信息",
+      "subtitle": "这些信息将通过官方机构验证(CAC 尼日利亚 / 天眼查 中国)。",
+      "legalName": "公司名称",
+      "country": "国家",
+      "countries": {
+        "NG": "🇳🇬 尼日利亚",
+        "CN": "🇨🇳 中国"
+      },
+      "cacNumber": "CAC 号码(尼日利亚)",
+      "bvn": "BVN",
+      "bvnHint": "银行验证号 — 11 位数字",
+      "businessLicense": "营业执照号"
+    },
+    "step2": {
+      "title": "证件上传",
+      "subtitle": "上传企业证件 — 通过 Supabase Vault 加密存储。",
+      "cacCert": "CAC 证书",
+      "proofOfAddress": "地址证明(水电账单或租约)",
+      "note": "黑客松演示中证件上传为模拟流程,生产环境将接入 Supabase Storage。"
+    },
+    "step3": {
+      "title": "验证进行中",
+      "subtitle": "正在并行查询各服务商。请关注下方实时进度。"
+    },
+    "providers": {
+      "title": "验证服务商",
+      "smile_id": {
+        "label": "Smile ID",
+        "description": "尼日利亚 KYC + BVN ↔ 身份照片匹配"
+      },
+      "comply_advantage": {
+        "label": "ComplyAdvantage",
+        "description": "全球制裁 + 政治敏感人物筛查"
+      },
+      "tianyancha": {
+        "label": "天眼查 Tianyancha",
+        "description": "中国企业工商信息查询"
+      },
+      "allApproved": "✓ 所有服务商均已通过。您的账户已可进行交易。"
+    },
+    "cta": {
+      "next": "下一步",
+      "previous": "返回",
+      "submit": "开始验证",
+      "dashboard": "前往仪表板"
+    }
+  },
   "footer": {
     "phase0Notice": "阶段 0 — 单一代码库脚手架。功能将在后续阶段交付。"
   }

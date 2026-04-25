@@ -84,6 +84,57 @@
       "cancelled": "Annulé"
     }
   },
+  "onboarding": {
+    "title": "Vérification KYB",
+    "subtitle": "Quelques minutes pour confirmer ton entreprise. Multi-providers en parallèle.",
+    "step1": {
+      "title": "Informations entreprise",
+      "subtitle": "Ces données sont vérifiées par les registres officiels (CAC Nigeria, Tianyancha Chine).",
+      "legalName": "Nom légal",
+      "country": "Pays",
+      "countries": {
+        "NG": "🇳🇬 Nigeria",
+        "CN": "🇨🇳 Chine"
+      },
+      "cacNumber": "Numéro CAC (Nigeria)",
+      "bvn": "BVN",
+      "bvnHint": "Bank Verification Number — 11 chiffres",
+      "businessLicense": "Numéro de licence d'exploitation"
+    },
+    "step2": {
+      "title": "Documents",
+      "subtitle": "Upload tes pièces — elles sont chiffrées at-rest dans Supabase Vault.",
+      "cacCert": "Certificat CAC",
+      "proofOfAddress": "Justificatif d'adresse (utility bill ou bail)",
+      "note": "Ces uploads sont simulés en démo hackathon — Supabase Storage sera branché en production."
+    },
+    "step3": {
+      "title": "Vérification en cours",
+      "subtitle": "On interroge nos providers en parallèle. Suit le live ci-dessous."
+    },
+    "providers": {
+      "title": "Providers de vérification",
+      "smile_id": {
+        "label": "Smile ID",
+        "description": "KYC Nigeria + match BVN ↔ ID photo"
+      },
+      "comply_advantage": {
+        "label": "ComplyAdvantage",
+        "description": "Screening sanctions + PEP global"
+      },
+      "tianyancha": {
+        "label": "Tianyancha",
+        "description": "Registre commercial chinois (天眼查)"
+      },
+      "allApproved": "✓ Tous les providers ont validé. Ton compte est prêt à transacter."
+    },
+    "cta": {
+      "next": "Suivant",
+      "previous": "Retour",
+      "submit": "Lancer la vérification",
+      "dashboard": "Aller au dashboard"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — scaffolding monorepo. Les features arrivent dans les phases suivantes."
   }

@@ -23,31 +23,37 @@ export type Database = {
         Row: Organization;
         Insert: Organization;
         Update: Partial<Organization>;
+        Relationships: [];
       };
       kyb_applications: {
         Row: KybApplication;
         Insert: KybApplication;
         Update: Partial<KybApplication>;
+        Relationships: [];
       };
       transactions: {
         Row: Transaction;
         Insert: Transaction;
         Update: Partial<Transaction>;
+        Relationships: [];
       };
       tranches: {
         Row: Tranche;
         Insert: Tranche;
         Update: Partial<Tranche>;
+        Relationships: [];
       };
       audit_events: {
         Row: AuditEvent;
         Insert: AuditEvent;
         Update: Partial<AuditEvent>;
+        Relationships: [];
       };
       sor_executions: {
         Row: SorExecution;
         Insert: SorExecution;
         Update: Partial<SorExecution>;
+        Relationships: [];
       };
     };
     Views: { [_ in never]: never };
