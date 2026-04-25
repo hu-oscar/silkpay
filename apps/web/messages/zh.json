@@ -54,6 +54,36 @@
       ]
     }
   },
+  "dashboard": {
+    "greeting": "您好 {name} 👋",
+    "subtitle": "您的跨境付款状态如下。",
+    "kpis": {
+      "totalSaved": "节省(对比 SWIFT)",
+      "activeCount": "进行中交易",
+      "settledCount": "已结算"
+    },
+    "transactions": {
+      "title": "最近交易",
+      "new": "新建交易",
+      "empty": "暂无交易。发起您的第一笔订单。",
+      "unknownCounterparty": "未知对方"
+    },
+    "status": {
+      "drafted": "草稿",
+      "kyb_pending": "KYB 审核中",
+      "quoted": "已报价",
+      "awaiting_funding": "待付款",
+      "funded": "已托管 · 进行中",
+      "in_transit": "运输中",
+      "inspected": "已检验",
+      "delivered": "已送达",
+      "settling": "结算中",
+      "settled": "已结算",
+      "disputed": "争议",
+      "refunded": "已退款",
+      "cancelled": "已取消"
+    }
+  },
   "footer": {
     "phase0Notice": "阶段 0 — 单一代码库脚手架。功能将在后续阶段交付。"
   }

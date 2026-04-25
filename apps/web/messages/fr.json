@@ -54,6 +54,36 @@
       ]
     }
   },
+  "dashboard": {
+    "greeting": "Bonjour {name} 👋",
+    "subtitle": "Voici l'état de tes paiements transfrontaliers.",
+    "kpis": {
+      "totalSaved": "Économisé vs SWIFT",
+      "activeCount": "Transactions actives",
+      "settledCount": "Réglées"
+    },
+    "transactions": {
+      "title": "Transactions récentes",
+      "new": "Nouvelle transaction",
+      "empty": "Aucune transaction pour le moment. Lance ta première commande.",
+      "unknownCounterparty": "Contrepartie inconnue"
+    },
+    "status": {
+      "drafted": "Brouillon",
+      "kyb_pending": "KYB en cours",
+      "quoted": "Devis prêt",
+      "awaiting_funding": "En attente de paiement",
+      "funded": "Financé · en cours",
+      "in_transit": "En transit",
+      "inspected": "Inspecté",
+      "delivered": "Livré",
+      "settling": "Règlement",
+      "settled": "Réglé",
+      "disputed": "Litige",
+      "refunded": "Remboursé",
+      "cancelled": "Annulé"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — scaffolding monorepo. Les features arrivent dans les phases suivantes."
   }

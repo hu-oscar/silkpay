@@ -54,6 +54,36 @@
       ]
     }
   },
+  "dashboard": {
+    "greeting": "Hello {name} 👋",
+    "subtitle": "Here's where your cross-border payments stand.",
+    "kpis": {
+      "totalSaved": "Saved vs SWIFT",
+      "activeCount": "Active transactions",
+      "settledCount": "Settled"
+    },
+    "transactions": {
+      "title": "Recent transactions",
+      "new": "New transaction",
+      "empty": "No transactions yet. Start your first order.",
+      "unknownCounterparty": "Unknown counterparty"
+    },
+    "status": {
+      "drafted": "Draft",
+      "kyb_pending": "KYB pending",
+      "quoted": "Quoted",
+      "awaiting_funding": "Awaiting funding",
+      "funded": "Funded · in progress",
+      "in_transit": "In transit",
+      "inspected": "Inspected",
+      "delivered": "Delivered",
+      "settling": "Settling",
+      "settled": "Settled",
+      "disputed": "Disputed",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."
   }
