@@ -38,6 +38,13 @@ services/**/.ruff_cache/
 # Claude Code per-machine settings (do NOT commit personal permissions)
 .claude/settings.local.json
 
+# Sample binaries (proforma PDFs/images for the Phase 3 demo)
+samples/*.pdf
+samples/*.jpg
+samples/*.jpeg
+samples/*.png
+samples/*.webp
+
 # OS
 .DS_Store
 Thumbs.db

@@ -135,6 +135,36 @@
       "dashboard": "前往仪表板"
     }
   },
+  "intake": {
+    "step": "步骤 1 / 4 · 文档解析",
+    "title": "上传形式发票",
+    "subtitle": "Claude Vision 在几秒内提取 HSC 编码、当事方、金额和贸易术语。",
+    "noKeyTitle": "演示模式(未配置 Anthropic 密钥)",
+    "noKeyBody": "请在 apps/web/.env.local 中添加 ANTHROPIC_API_KEY,以运行真实的 Claude Vision 解析。",
+    "uploader": {
+      "drop": "拖入形式发票文件(PDF / JPG / PNG)",
+      "formats": "PDF · JPEG · PNG · WebP — 最大 8 MB",
+      "parsing": "Claude Vision 正在提取字段…",
+      "parsingHint": "通常需要 5-10 秒。"
+    },
+    "result": {
+      "title": "文档解析成功",
+      "manualReview": "置信度 < 85% — 请手动验证字段后再继续。",
+      "invoiceNumber": "发票号",
+      "issuedDate": "开具日期",
+      "seller": "卖方",
+      "sellerCountry": "卖方国家",
+      "buyer": "买方",
+      "buyerCountry": "买方国家",
+      "currency": "货币",
+      "totalAmount": "总金额",
+      "incoterms": "贸易术语",
+      "paymentTerms": "付款条件",
+      "lineItems": "明细项({count})",
+      "uploadAnother": "上传另一份",
+      "continueCta": "继续报价"
+    }
+  },
   "footer": {
     "phase0Notice": "阶段 0 — 单一代码库脚手架。功能将在后续阶段交付。"
   }

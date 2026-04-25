@@ -7,27 +7,30 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 
 ## 🏗️ Active Phase & Goal
 
-**Current Phase:** Phase 3 — Document intake Claude Vision (Feature 2)
+**Current Phase:** Phase 4 — Quote engine + SOR CVXPY (Features 3 + 6)
 
-**Current Task:** Upload proforma PDF → Anthropic Claude Sonnet vision parse → champs structurés streamés dans l'UI.
+**Current Task:** Build the multi-source quote orchestrator + real CVXPY convex solver in `services/sor/`.
 
 **Next Steps:**
 
-1. Drag-drop upload zone sur `/transactions/new` step 1.
-2. Server Action `parseProforma(file)` → Claude vision API avec Zod schema en structured outputs.
-3. UI streaming Framer Motion : champs apparaissent un par un.
-4. Sauvegarde dans `transactions.parsed_documents` JSONB.
-5. 3-4 PDFs proforma de test dans `samples/` pour la démo.
+1. 3 fake source endpoints in Next.js API routes (`/api/sources/{yellow-card,otc-desk-1,otc-desk-2}/quote`) returning realistic NGN/USDT prices (base spot + spread per-source + Gaussian noise).
+2. 1 PSP endpoint `/api/sources/psp/usdt-cny` for the leg.
+3. `services/sor/app.py` : implement the CVXPY ECOS solver (DCP-compliant, slippage as `quad_over_lin`, constraints `sum=target`, depth caps, max 60% per source). Replace the `/health` stub.
+4. `pytest` for the solver: 1-source / 2-source-with-cap / 3-source-stress.
+5. Server Action `getQuote({ amount_ngn })` orchestrates parallel fetches → POST to local FastAPI → consolidate → persist `transactions.quote_breakdown` + `sor_executions` rows.
+6. UI : `<QuoteBreakdownCard>` Wise-style + `<SORAllocationChart>` recharts pie animated, on the next-transaction flow step 2.
 
-**Phase 3 exit criteria:**
+**Phase 4 exit criteria:**
 
-- Upload d'un sample PDF → 5-10s plus tard, ~30 champs structurés (HSC, parties, montants) visibles.
-- Confidence score affiché. Si <0.85, badge "Manual review recommended".
-- `transactions` row créée avec parsed_documents JSONB hydraté.
+- "Get quote" button → fetches 3 sources in parallel, calls CVXPY solver, returns in < 3s.
+- Breakdown shows NGN paid / USDT received / CNY delivered / fees / savings vs SWIFT.
+- Pie chart shows source allocation (with `predicted_slippage_bps` tooltip).
+- DB persisted (`quote_breakdown` JSONB + 3 `sor_executions` rows).
 
-**Manual setup needed before Phase 3:**
+**Manual setup before Phase 4 testing:**
 
-- Add `ANTHROPIC_API_KEY` to `apps/web/.env.local`.
+- Run `pnpm sor:dev` in a second terminal (uvicorn on :8000).
+- Install missing solver deps if needed: `services/sor/.venv/bin/pip install scipy ecos`.
 
 ## 📂 Architectural Decisions
 
@@ -57,12 +60,32 @@ _(Log current bugs or weird workarounds here. Empty at project init.)_
 - [x] **Phase 1** — DB schema + fake-user system + dashboard stub (in-memory store)
 - [x] **Phase 1.5** — Swap in-memory → **Supabase Postgres** (queries.ts now hits real DB; in-memory store removed)
 - [x] **Phase 2** — KYB onboarding wizard with **Supabase Realtime providers panel**
-- [ ] Phase 3 — Document intake Claude Vision (Feature 2)
+- [x] **Phase 3** — Document intake **Claude Vision** (Anthropic Opus 4.7 + structured outputs)
+- [ ] Phase 4 — Quote engine + SOR CVXPY (Features 3 + 6)
 - [ ] Phase 3 — Document Intake Claude Vision (Feature 2)
 - [ ] Phase 4 — Quote Engine + SOR CVXPY (Features 3 + 6)
 - [ ] Phase 5 — Smart Contract Escrow on BSC testnet (Feature 4)
 - [ ] Phase 6 — Dashboard + transaction detail (Feature 5)
 - [ ] Phase 7 — Vue supplier + polish + seed + recording prep
+
+### Phase 3 deliverables (reference) — Document intake Claude Vision
+
+- **Manual user setup needed once**: add `ANTHROPIC_API_KEY` to `apps/web/.env.local` (and to Vercel env vars for prod). Set a $5 spend cap on console.anthropic.com → Settings → Limits.
+- Stack: `@anthropic-ai/sdk@0.91.1` + `messages.parse()` + `zodOutputFormat()` for structured outputs (recommended path per the claude-api skill — auto-validates the response against the Zod schema, no manual JSON parsing).
+- Model: **claude-opus-4-7** (skill default, non-negotiable). Cost ≈ $0.03–$0.06 per proforma parse (input $5/M + output $25/M, ~3-5k input + ~500-1.5k output).
+- Cost containment: system prompt wrapped with `cache_control: { type: "ephemeral" }` (90% read price after first request); `max_tokens=4096` cap (proforma JSON is ≪ 2k tokens); 8 MB hard limit on file size; explicit MIME allowlist.
+- Files :
+  - `apps/web/src/lib/intake/schemas.ts` — Zod `ProformaInvoiceSchema` (`.nullable()` not `.optional()` to match structured-output strict shape).
+  - `apps/web/src/lib/intake/anthropic.ts` — memoized server-only client; throws clear error if key missing.
+  - `apps/web/src/lib/intake/actions.ts` — Server Action `parseProforma(formData)` : reads file → base64 → calls Claude → typed result on success, typed error union on failure (`NO_API_KEY` / `AUTH_ERROR` / `RATE_LIMIT` / `FILE_TOO_LARGE` / `UNSUPPORTED_TYPE` / `PARSE_ERROR` / `DB_ERROR` / `VALIDATION`). Returns parsed JSON + cost in USD + latency in ms.
+  - `apps/web/src/app/[locale]/transactions/new/page.tsx` — Server Component, shows banner if no API key.
+  - `apps/web/src/app/[locale]/transactions/new/intake-uploader.tsx` — Client Component, drag-drop zone + parsing state + animated result panel + error panel with hint per error code.
+- UI : results panel uses `animate-fade-up` CSS animation (in `globals.css`, honors `prefers-reduced-motion`) to stagger field reveal. Confidence badge tone scales by score (≥ 0.9 emerald, ≥ 0.85 brand, < 0.85 amber + manual-review banner).
+- DB : new transaction row inserted with `status='drafted'`, `seller_org_id` defaulted to seeded Yiwu supplier, `parsed_documents.proforma` hydrated. After parse, "Continue to quote engine" CTA pushes to `/dashboard` (no `/transactions/[id]` page yet — Phase 6).
+- `db/schema.ts#ParsedProforma` relaxed to `?: T | null` to accept both seed style (sparse `undefined`) and Claude-parse style (full shape with `null` per structured-output spec).
+- `samples/` directory created with a README; PDFs/JPEGs/PNGs/WebPs gitignored.
+- Full i18n FR/EN/zh under `intake` + `intake.uploader` + `intake.result` namespaces.
+- Validation: typecheck ✓, build ✓ (15 routes including `/{fr,en,zh}/transactions/new`), `/fr/transactions/new` returns 200 with all UI elements rendered (drop zone, formats, demo-mode banner since key not yet provided in `.env.local`).
 
 ### Phase 2 deliverables (reference) — KYB onboarding wizard
 

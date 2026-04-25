@@ -135,6 +135,36 @@
       "dashboard": "Go to dashboard"
     }
   },
+  "intake": {
+    "step": "Step 1 / 4 · Document intake",
+    "title": "Upload your proforma",
+    "subtitle": "Claude Vision extracts HSC codes, parties, amounts, and Incoterms in seconds.",
+    "noKeyTitle": "Demo mode (no Anthropic key)",
+    "noKeyBody": "Add ANTHROPIC_API_KEY to apps/web/.env.local to run a real Claude Vision parse. Without a key, uploads will fail with an explicit error.",
+    "uploader": {
+      "drop": "Drop your proforma here (PDF, JPG, PNG)",
+      "formats": "PDF · JPEG · PNG · WebP — 8 MB max",
+      "parsing": "Claude Vision is extracting fields…",
+      "parsingHint": "Usually takes 5-10 seconds."
+    },
+    "result": {
+      "title": "Document parsed successfully",
+      "manualReview": "Confidence < 85% — manually verify fields before continuing.",
+      "invoiceNumber": "Invoice number",
+      "issuedDate": "Issued date",
+      "seller": "Seller",
+      "sellerCountry": "Seller country",
+      "buyer": "Buyer",
+      "buyerCountry": "Buyer country",
+      "currency": "Currency",
+      "totalAmount": "Total amount",
+      "incoterms": "Incoterms",
+      "paymentTerms": "Payment terms",
+      "lineItems": "Line items ({count})",
+      "uploadAnother": "Upload another",
+      "continueCta": "Continue to quote engine"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."
   }

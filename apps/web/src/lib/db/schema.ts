@@ -58,22 +58,34 @@ export type KybApplication = {
   created_at: string;
 };
 
+/**
+ * Stored as `transactions.parsed_documents.proforma`. Both the seed (sparse,
+ * uses `undefined`) and the Claude Vision parse (full shape, uses `null` per
+ * structured-output schema) write here, so every field accepts `?: T | null`.
+ */
+type Party = {
+  name?: string | null;
+  address?: string | null;
+  country?: string | null;
+  contact?: string | null;
+};
+
 export type ParsedProforma = {
-  invoice_number?: string;
-  issued_date?: string;
-  seller?: { name?: string; address?: string; country?: string; contact?: string };
-  buyer?: { name?: string; address?: string; country?: string; contact?: string };
+  invoice_number?: string | null;
+  issued_date?: string | null;
+  seller?: Party | null;
+  buyer?: Party | null;
   line_items?: Array<{
     description: string;
-    hsc_code?: string;
+    hsc_code?: string | null;
     qty: number;
     unit_price: number;
     total: number;
   }>;
-  currency?: "USD" | "CNY" | "NGN" | "EUR";
-  total_amount?: number;
-  incoterms?: "FOB" | "CIF" | "EXW" | "DDP" | "DAP" | "OTHER";
-  payment_terms?: string;
+  currency?: "USD" | "CNY" | "NGN" | "EUR" | null;
+  total_amount?: number | null;
+  incoterms?: "FOB" | "CIF" | "EXW" | "DDP" | "DAP" | "OTHER" | null;
+  payment_terms?: string | null;
   confidence_score?: number;
 };
 

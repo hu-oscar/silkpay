@@ -135,6 +135,36 @@
       "dashboard": "Aller au dashboard"
     }
   },
+  "intake": {
+    "step": "Étape 1 / 4 · Document intake",
+    "title": "Upload ton proforma",
+    "subtitle": "Claude Vision extrait HSC codes, parties, montants, Incoterms en quelques secondes.",
+    "noKeyTitle": "Mode démo (pas de clé Anthropic)",
+    "noKeyBody": "Ajoute ANTHROPIC_API_KEY dans apps/web/.env.local pour lancer un vrai parse Claude Vision. Sans clé, l'upload s'arrête avec une erreur explicite.",
+    "uploader": {
+      "drop": "Glisse ton proforma ici (PDF, JPG, PNG)",
+      "formats": "PDF · JPEG · PNG · WebP — 8 MB max",
+      "parsing": "Claude Vision extrait les champs…",
+      "parsingHint": "Cela prend généralement 5-10 secondes."
+    },
+    "result": {
+      "title": "Document parsé avec succès",
+      "manualReview": "Confiance < 85% — vérifie manuellement les champs avant de continuer.",
+      "invoiceNumber": "Numéro de facture",
+      "issuedDate": "Date d'émission",
+      "seller": "Fournisseur",
+      "sellerCountry": "Pays fournisseur",
+      "buyer": "Acheteur",
+      "buyerCountry": "Pays acheteur",
+      "currency": "Devise",
+      "totalAmount": "Montant total",
+      "incoterms": "Incoterms",
+      "paymentTerms": "Conditions de paiement",
+      "lineItems": "Lignes ({count})",
+      "uploadAnother": "Uploader un autre document",
+      "continueCta": "Continuer vers le quote engine"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — scaffolding monorepo. Les features arrivent dans les phases suivantes."
   }
