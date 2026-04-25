@@ -1,0 +1,39 @@
+{
+  "name": "yuan-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Yuán — Pay China like it's next door. Hackathon MVP monorepo.",
+  "packageManager": "pnpm@10.13.1",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:contracts": "cd apps/contracts && forge test -vvv",
+    "test:sor": "cd services/sor && .venv/bin/pytest -q",
+    "sor:dev": "cd services/sor && .venv/bin/uvicorn app:app --reload --port 8000",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "prettier": "^3.4.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
+    "typescript": "^5.7.2"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{ts,tsx,js,jsx,json,md}": [
+      "prettier --write"
+    ],
+    "agent_docs/**/*.md": [
+      "prettier --write"
+    ],
+    "docs/**/*.md": [
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

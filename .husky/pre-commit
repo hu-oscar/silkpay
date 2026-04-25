@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+# Format staged files
+pnpm exec lint-staged || exit 1
+
+# If any web sources changed, run typecheck + lint
+if git diff --cached --name-only | grep -qE '^apps/web/'; then
+  echo "→ Typecheck + lint @yuan/web"
+  pnpm --filter @yuan/web typecheck || exit 1
+  pnpm --filter @yuan/web lint || exit 1
+fi
+
+# If any contract sources changed, run forge test
+if git diff --cached --name-only | grep -qE '^apps/contracts/'; then
+  echo "→ Forge test"
+  (cd apps/contracts && ~/.foundry/bin/forge test) || exit 1
+fi
+
+# If any SOR python sources changed, run pytest
+if git diff --cached --name-only | grep -qE '^services/sor/'; then
+  echo "→ pytest services/sor"
+  (cd services/sor && .venv/bin/pytest -q) || exit 1
+fi

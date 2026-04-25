@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+
+# Foundry
+apps/contracts/out/
+apps/contracts/cache/
+apps/contracts/broadcast/
+apps/contracts/.gas-snapshot
+
+# Python
+services/**/.venv/
+services/**/__pycache__/
+services/**/*.pyc
+services/**/.pytest_cache/
+services/**/.ruff_cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code per-machine settings (do NOT commit personal permissions)
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+*.lcov
+
+# Vercel
+.vercel/
+
+# Misc
+*.tgz
+.eslintcache
+.stylelintcache

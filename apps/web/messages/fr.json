@@ -1,0 +1,60 @@
+{
+  "brand": {
+    "name": "Yuán",
+    "tagline": "Pay China like it's next door."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "newTransaction": "Nouvelle transaction",
+    "onboarding": "Onboarding"
+  },
+  "languageSwitcher": {
+    "label": "Langue",
+    "fr": "Français",
+    "en": "English",
+    "zh": "中文"
+  },
+  "landing": {
+    "hero": {
+      "title": "Payez la Chine comme si c'était le voisin.",
+      "subtitle": "Règlement T+0, escrow programmable, comparaison transparente vs SWIFT — pour les importateurs Lagos ↔ Yiwu.",
+      "cta": "Calculer mes économies",
+      "ctaSecondary": "Voir une démo"
+    },
+    "calculator": {
+      "title": "Combien vais-je économiser ?",
+      "amountLabel": "Montant de la commande (USD)",
+      "amountPlaceholder": "30 000",
+      "swiftLabel": "Coût SWIFT estimé",
+      "yuanLabel": "Coût avec Yuán",
+      "savingsLabel": "Vous économisez",
+      "swiftRate": "≈ 7,5 % de friction",
+      "yuanRate": "≈ 1,8 % de friction (FX + plateforme + on/off-ramp)",
+      "perTransaction": "par transaction"
+    },
+    "valueProps": {
+      "title": "Pourquoi Yuán",
+      "items": [
+        {
+          "title": "AI-first",
+          "body": "Upload ton proforma — Claude Vision extrait HSC codes, parties, Incoterms en quelques secondes."
+        },
+        {
+          "title": "Escrow programmable",
+          "body": "Smart contract 3 tranches sur BNB Chain. Le fournisseur ne reçoit que si le BL est signé, l'inspection validée, la livraison confirmée."
+        },
+        {
+          "title": "SOR multi-source",
+          "body": "Optimiseur convexe qui route ton ordre sur 3 sources de liquidité pour minimiser le coût total."
+        },
+        {
+          "title": "Bilingue dès le jour 1",
+          "body": "FR / EN / 中文 — UX adaptée à Chinedu à Lagos ET Mr. Chen à Yiwu."
+        }
+      ]
+    }
+  },
+  "footer": {
+    "phase0Notice": "Phase 0 — scaffolding monorepo. Les features arrivent dans les phases suivantes."
+  }
+}

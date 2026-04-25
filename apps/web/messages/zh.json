@@ -1,0 +1,60 @@
+{
+  "brand": {
+    "name": "元 Yuán",
+    "tagline": "支付中国,如同隔壁。"
+  },
+  "nav": {
+    "dashboard": "仪表板",
+    "newTransaction": "新交易",
+    "onboarding": "开户"
+  },
+  "languageSwitcher": {
+    "label": "语言",
+    "fr": "Français",
+    "en": "English",
+    "zh": "中文"
+  },
+  "landing": {
+    "hero": {
+      "title": "支付中国,如同隔壁。",
+      "subtitle": "T+0 结算、可编程托管、对比 SWIFT 完全透明 — 为拉各斯 ↔ 义乌进口商打造。",
+      "cta": "计算节省金额",
+      "ctaSecondary": "观看演示"
+    },
+    "calculator": {
+      "title": "我能节省多少?",
+      "amountLabel": "订单金额(美元)",
+      "amountPlaceholder": "30,000",
+      "swiftLabel": "SWIFT 预估成本",
+      "yuanLabel": "使用 Yuán 成本",
+      "savingsLabel": "您节省",
+      "swiftRate": "≈ 7.5% 摩擦成本",
+      "yuanRate": "≈ 1.8% 摩擦成本(汇率 + 平台 + 入金/出金)",
+      "perTransaction": "每笔交易"
+    },
+    "valueProps": {
+      "title": "为什么选择 Yuán",
+      "items": [
+        {
+          "title": "AI 优先",
+          "body": "上传形式发票 — Claude Vision 在几秒内提取 HSC 编码、当事方、贸易术语。"
+        },
+        {
+          "title": "可编程托管",
+          "body": "BNB 链上的 3 阶段智能合约。供应商仅在提单签署、检验通过、交付确认时分阶段收款。"
+        },
+        {
+          "title": "多源智能路由",
+          "body": "凸优化器在 3 个流动性来源之间路由订单,最小化总成本。"
+        },
+        {
+          "title": "首日即支持多语言",
+          "body": "FR / EN / 中文 — 既适合拉各斯的 Chinedu,也适合义乌的陈先生。"
+        }
+      ]
+    }
+  },
+  "footer": {
+    "phase0Notice": "阶段 0 — 单一代码库脚手架。功能将在后续阶段交付。"
+  }
+}

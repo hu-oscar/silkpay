@@ -1,0 +1,60 @@
+{
+  "brand": {
+    "name": "Yuán",
+    "tagline": "Pay China like it's next door."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "newTransaction": "New transaction",
+    "onboarding": "Onboarding"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "fr": "Français",
+    "en": "English",
+    "zh": "中文"
+  },
+  "landing": {
+    "hero": {
+      "title": "Pay China like it's next door.",
+      "subtitle": "T+0 settlement, programmable escrow, transparent comparison vs SWIFT — for Lagos ↔ Yiwu importers.",
+      "cta": "Calculate my savings",
+      "ctaSecondary": "Watch a demo"
+    },
+    "calculator": {
+      "title": "How much will I save?",
+      "amountLabel": "Order amount (USD)",
+      "amountPlaceholder": "30,000",
+      "swiftLabel": "Estimated SWIFT cost",
+      "yuanLabel": "Cost with Yuán",
+      "savingsLabel": "You save",
+      "swiftRate": "≈ 7.5% friction",
+      "yuanRate": "≈ 1.8% friction (FX + platform + on/off-ramp)",
+      "perTransaction": "per transaction"
+    },
+    "valueProps": {
+      "title": "Why Yuán",
+      "items": [
+        {
+          "title": "AI-first",
+          "body": "Upload your proforma — Claude Vision extracts HSC codes, parties, Incoterms in seconds."
+        },
+        {
+          "title": "Programmable escrow",
+          "body": "3-tranche smart contract on BNB Chain. The supplier only gets paid as BL is signed, inspection validated, delivery confirmed."
+        },
+        {
+          "title": "Multi-source SOR",
+          "body": "Convex optimizer routing your order across 3 liquidity sources to minimize total cost."
+        },
+        {
+          "title": "Bilingual from day one",
+          "body": "FR / EN / 中文 — UX tailored to Chinedu in Lagos AND Mr. Chen in Yiwu."
+        }
+      ]
+    }
+  },
+  "footer": {
+    "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."
+  }
+}

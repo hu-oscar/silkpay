@@ -1,0 +1,77 @@
+---
+description: Yuán project rules — read AGENTS.md and agent_docs/ first. Mobile-first, TypeScript strict, audit-grade Solidity, single corridor V1.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Cursor Rules for Yuán
+
+## Project Context
+
+- **App:** Yuán (元) — *"Pay China like it's next door."*
+- **Stack:** Next.js 15 (App Router) + TypeScript strict + shadcn/ui + Tailwind + next-intl (FR/EN/中文); Clerk auth; Supabase Postgres + Storage + Realtime + Vault; FastAPI on Modal (Python); Solidity 0.8.24+ with Foundry on BNB Chain (USDT BEP-20 `0x55d398326f99059fF775485246999027B3197955`); Anthropic Claude Sonnet (vision); CVXPY + XGBoost on Modal; Inngest for events; Tenderly + Sentry + Posthog.
+- **Stage:** MVP development — Phase 1 (project setup + Foundry ramp-up).
+- **User level:** B (Developer) — full-stack + smart contract + quant background. Skip beginner-level explanations.
+
+## Directives
+
+1. **Master plan:** ALWAYS read `AGENTS.md` first for the current phase, conventions, protected areas. Then check `MEMORY.md` for active task and recent decisions.
+2. **Documentation:** refer to `agent_docs/` — `tech_stack.md` (deps + commands + canonical examples), `code_patterns.md` (architecture + Solidity + Python + Next.js patterns), `product_requirements.md` (V1 scope), `testing.md` (verification loop).
+3. **Plan-first:** for any change touching > 1 file (or any Solidity / SOR / ML code), propose a brief plan + invariants and wait for approval before generating implementation. Use Reflect / Plan mode.
+4. **Incremental build:** one small feature at a time. Commit after each working feature. Test frequently.
+5. **Verification loop (mandatory):** after each logical change run, in order: `pnpm lint` → `pnpm typecheck` → targeted unit tests → (if contracts) `forge test` + `forge coverage` + `slither .` → (if UI) walk the golden path in dev. Update `MEMORY.md` on any new architectural decision.
+6. **Pre-commit:** hooks enforce lint + typecheck + targeted tests. If a hook fails, fix it, re-stage, create a NEW commit — never `--amend` past a hook failure.
+7. **No linting commentary:** run `pnpm lint`; report failures, do not narrate style nits.
+8. **Communication:** be concise. Cite the file you're editing and why. Flag security implications proactively.
+9. **Read before recommending:** check `agent_docs/tech_stack.md` before suggesting a library, `agent_docs/code_patterns.md` before suggesting a pattern, `agent_docs/product_requirements.md` before adding a feature (V1 = features 1–6 only).
+
+## Hard Constraints
+
+- `any` is **forbidden** in TypeScript — use `unknown` + type guards.
+- Zod (TS) / Pydantic v2 (Py) at every API boundary; trust types inside.
+- No DB calls from route handlers — go through a service layer.
+- No mainnet smart-contract deploy without a completed Hacken/Cyfrin audit + Code4rena contest.
+- No marketing copy referencing "AI" or "ML" without auditable backing.
+- No bypassing pre-commit hooks (`--no-verify`) without explicit human approval.
+- No editing of `apps/contracts/src/` once a tagged audit version exists; patch via a new versioned contract.
+- No features outside V1 scope (single corridor Lagos↔Yiwu, P0 features 1–6 only).
+- No placeholder content (Lorem ipsum, fake testimonials, sample images) in shippable code.
+- No hardcoded colors/spacings — design tokens via `tailwind.config.ts` only.
+- Solidity: `ReentrancyGuard` everywhere, pull-payment (never push), EIP-712 typed sigs for state-changing actions, NatSpec on every public/external function, Tether blacklist check before every USDT transfer.
+
+## Mobile-First Performance
+
+- Page load < 3s on 3G p95.
+- Lighthouse mobile ≥ 90 on landing + dashboard.
+- Payload < 50KB initial per route.
+- Images: lazy WebP/AVIF, never raw PNG/JPG > 50KB.
+- Skeleton loaders (shadcn `Skeleton`) on every data-fetching surface.
+- Optimistic UI on actions (e.g., "Acknowledge BL"), with rollback on failure.
+
+## i18n
+
+- Every user-facing string lives in `apps/web/messages/{en,fr,zh}.json`.
+- Use `useTranslations` (server) / `useTranslations` (client) — no inline copy.
+- Numbers via `Intl.NumberFormat` with locale + currency. Always set `font-feature-settings: "tnum"` on amount displays.
+- Locale-prefixed routes: `/fr/dashboard`, `/zh/dashboard`.
+
+## Commands
+
+- `pnpm install` — install workspaces
+- `pnpm --filter web dev` — Next.js dev (`:3000`)
+- `pnpm --filter web build` — production build
+- `pnpm lint` / `pnpm typecheck` — quality gates
+- `pnpm --filter web test` — Vitest unit
+- `pnpm --filter web test:e2e` — Playwright E2E
+- `cd apps/contracts && forge test -vvv` / `forge coverage` — contract tests
+- `cd apps/contracts && slither . --filter-paths "lib/"` — static analysis
+- `cd services/<name> && pytest -q` — Python unit
+- `cd services/<name> && modal serve app.py` / `modal deploy app.py` — local dev / deploy
+
+## Pointers
+
+- `AGENTS.md` — master plan (read first)
+- `MEMORY.md` — active phase + decisions log
+- `REVIEW-CHECKLIST.md` — pre-merge checklist
+- `agent_docs/` — full agent instruction set
+- `docs/` — original PRD, Tech Design, research (immutable sources of truth)
