@@ -14,6 +14,7 @@ import { TransactionTimeline } from "@/components/transaction-timeline";
 import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getTransactionById } from "@/lib/db/queries";
+import { syncTransactionStatus } from "@/lib/escrow/actions";
 
 import { EscrowSection } from "./escrow-section";
 import { QuoteSection } from "./quote-section";
@@ -31,6 +32,12 @@ export default async function TransactionDetailPage({
 
   const tx = await getTransactionById(id);
   if (!tx) notFound();
+
+  // If the escrow exists on-chain, recover from any DB drift before we render
+  // the timeline (prior bugs left some rows stuck at "quoted" while on-chain
+  // milestones had already released). Idempotent — no write if already in sync.
+  const syncedStatus = tx.escrow_address ? await syncTransactionStatus(tx.id) : null;
+  const displayStatus = syncedStatus ?? tx.status;
 
   const { org } = await getCurrentUser();
   const isBuyer = tx.buyer_org_id === org.id;
@@ -118,7 +125,7 @@ export default async function TransactionDetailPage({
         </div>
       )}
 
-      <TransactionTimeline status={tx.status} />
+      <TransactionTimeline status={displayStatus} />
 
       <QuoteSection
         transactionId={tx.id}

@@ -23,6 +23,7 @@ import { revalidatePath } from "next/cache";
 import { decodeEventLog, parseAbiItem, parseUnits, zeroAddress } from "viem";
 import type { Address, Hex } from "viem";
 
+import type { TxStatus } from "@/lib/db/schema";
 import { supabaseServer } from "@/lib/supabase/server";
 
 import { ESCROW_FACTORY_ABI, MOCK_USDT_ABI, TRADE_ESCROW_ABI } from "./abis";
@@ -207,15 +208,24 @@ export async function fundEscrow(transactionId: string): Promise<FundEscrowResul
     await pub.waitForTransactionReceipt({ hash: fundHash });
 
     // 4. Persist DB.
-    await supabase
+    const { error: updErr } = await supabase
       .from("transactions")
       .update({
         status: "funded",
         escrow_address: escrowAddress,
-        escrow_chain: "bsc-testnet",
+        escrow_chain: "sepolia",
         updated_at: new Date().toISOString(),
       })
       .eq("id", transactionId);
+    if (updErr) {
+      // On-chain succeeded but DB write failed — surface so the UI shows the
+      // mismatch instead of silently leaving a stale "quoted" status.
+      return {
+        ok: false,
+        code: "DB_ERROR",
+        message: `Funded on-chain but failed to persist status: ${updErr.message}`,
+      };
+    }
 
     await supabase.from("audit_events").insert({
       id: crypto.randomUUID(),
@@ -254,6 +264,18 @@ export type AttestResult =
   | { ok: true; txHash: Hex }
   | { ok: false; code: "NOT_FOUND" | "ON_CHAIN_FAILED" | "DB_ERROR"; message: string };
 
+/**
+ * Attest a milestone on-chain, then immediately claim it for the seller (in
+ * the hackathon collapse, deployer == arbiter == seller, so chaining keeps
+ * the demo to one click per milestone). Bumps tx.status accordingly so the
+ * timeline reflects on-chain reality.
+ *
+ * Status mapping after a successful attest+claim :
+ *   tranche 0 (BL signed)            → "in_transit"
+ *   tranche 1 (inspection certified) → "inspected"
+ *   tranche 2 (delivery acknowledged) → "delivered"
+ *   all 3 released                   → "settled"
+ */
 export async function attestMilestone(
   transactionId: string,
   trancheIndex: 0 | 1 | 2,
@@ -268,19 +290,23 @@ export async function attestMilestone(
   if (!tx?.escrow_address) {
     return { ok: false, code: "NOT_FOUND", message: "Escrow not deployed" };
   }
+  const escrowAddr = tx.escrow_address as Address;
 
   try {
     const wallet = walletClient();
     const account = walletAccount();
-    const hash = await wallet.writeContract({
+    const pub = publicClient();
+
+    // 1. Attest on-chain (arbiter signature).
+    const attestHash = await wallet.writeContract({
       account,
       chain: wallet.chain,
-      address: tx.escrow_address as Address,
+      address: escrowAddr,
       abi: TRADE_ESCROW_ABI,
       functionName: "attestMilestone",
       args: [trancheIndex],
     });
-    await publicClient().waitForTransactionReceipt({ hash });
+    await pub.waitForTransactionReceipt({ hash: attestHash });
 
     await supabase.from("audit_events").insert({
       id: crypto.randomUUID(),
@@ -289,17 +315,77 @@ export async function attestMilestone(
       actor_type: "arbiter",
       event_type: "milestone_attested",
       payload: { tranche_index: trancheIndex },
-      on_chain_tx_hash: hash,
+      on_chain_tx_hash: attestHash,
       created_at: new Date().toISOString(),
     });
 
+    // 2. Auto-claim (seller pull-payment, same EOA in demo).
+    const claimHash = await wallet.writeContract({
+      account,
+      chain: wallet.chain,
+      address: escrowAddr,
+      abi: TRADE_ESCROW_ABI,
+      functionName: "claim",
+      args: [trancheIndex],
+    });
+    const claimReceipt = await pub.waitForTransactionReceipt({ hash: claimHash });
+
+    let claimedAmount = "0";
+    for (const log of claimReceipt.logs) {
+      try {
+        const decoded = decodeEventLog({
+          abi: TRADE_ESCROW_ABI,
+          data: log.data,
+          topics: log.topics,
+        });
+        if (decoded.eventName === "Claimed") {
+          claimedAmount = String(decoded.args.amount);
+          break;
+        }
+      } catch {
+        /* skip unrelated logs */
+      }
+    }
+
+    await supabase.from("audit_events").insert({
+      id: crypto.randomUUID(),
+      transaction_id: transactionId,
+      actor_id: null,
+      actor_type: "seller",
+      event_type: "tranche_claimed",
+      payload: { tranche_index: trancheIndex, amount_raw: claimedAmount },
+      on_chain_tx_hash: claimHash,
+      created_at: new Date().toISOString(),
+    });
+
+    // 3. Bump tx.status — read on-chain to count released tranches authoritatively.
+    const state = await readEscrowState(escrowAddr);
+    const releasedCount = state?.tranches.filter((t) => t.status === 2).length ?? 0;
+    const newStatus: TxStatus =
+      releasedCount === 3
+        ? "settled"
+        : trancheIndex === 0
+          ? "in_transit"
+          : trancheIndex === 1
+            ? "inspected"
+            : "delivered";
+
+    const { error: updErr } = await supabase
+      .from("transactions")
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .eq("id", transactionId);
+    if (updErr) {
+      // On-chain succeeded — return ok but flag the DB drift via console for ops.
+      console.error("Status update failed after attest+claim:", updErr.message);
+    }
+
     revalidatePath("/", "layout");
-    return { ok: true, txHash: hash };
+    return { ok: true, txHash: attestHash };
   } catch (err) {
     return {
       ok: false,
       code: "ON_CHAIN_FAILED",
-      message: err instanceof Error ? err.message : "attest failed",
+      message: err instanceof Error ? err.message : "attest+claim failed",
     };
   }
 }
@@ -442,3 +528,50 @@ export async function readEscrowState(escrowAddress: string): Promise<EscrowOnCh
 // Silence unused warning on `parseAbiItem` import — keep it available for
 // future log-fetching use cases (e.g. EscrowCreated lookup by txRef).
 void parseAbiItem;
+
+// ---------------------------- Sync DB ↔ on-chain ------------------------- //
+
+/**
+ * Idempotently align `tx.status` with the on-chain escrow reality. Used by
+ * the tx detail page to recover from any drift (e.g. attestations done before
+ * the auto-claim chain landed, or DB writes that silently failed). Returns
+ * the status the DB will hold after the call.
+ *
+ * Mapping :
+ *   3 tranches Released                → "settled"
+ *   2 tranches Released                → "delivered"
+ *   1 tranche  Released                → "in_transit"
+ *   0 Released, escrow funded          → "funded"
+ *   nothing on-chain (no escrow)       → unchanged
+ */
+export async function syncTransactionStatus(transactionId: string): Promise<TxStatus | null> {
+  const supabase = supabaseServer();
+  const { data: tx, error } = await supabase
+    .from("transactions")
+    .select("id, status, escrow_address")
+    .eq("id", transactionId)
+    .maybeSingle();
+  if (error || !tx?.escrow_address) return null;
+
+  const state = await readEscrowState(tx.escrow_address);
+  if (!state) return tx.status as TxStatus;
+
+  const releasedCount = state.tranches.filter((t) => t.status === 2).length;
+  const desired: TxStatus = !state.funded
+    ? (tx.status as TxStatus)
+    : releasedCount === 3
+      ? "settled"
+      : releasedCount === 2
+        ? "delivered"
+        : releasedCount === 1
+          ? "in_transit"
+          : "funded";
+
+  if (desired !== tx.status) {
+    await supabase
+      .from("transactions")
+      .update({ status: desired, updated_at: new Date().toISOString() })
+      .eq("id", transactionId);
+  }
+  return desired;
+}
