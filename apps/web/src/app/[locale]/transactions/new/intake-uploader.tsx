@@ -113,7 +113,7 @@ export function IntakeUploader() {
           parsed={result.parsed}
           cost={result.cost_usd}
           latencyMs={result.latency_ms}
-          onContinue={() => router.push("/dashboard")}
+          onContinue={() => router.push(`/transactions/${result.transactionId}`)}
           onReset={reset}
         />
       )}

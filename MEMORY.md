@@ -61,12 +61,36 @@ _(Log current bugs or weird workarounds here. Empty at project init.)_
 - [x] **Phase 1.5** — Swap in-memory → **Supabase Postgres** (queries.ts now hits real DB; in-memory store removed)
 - [x] **Phase 2** — KYB onboarding wizard with **Supabase Realtime providers panel**
 - [x] **Phase 3** — Document intake **Claude Vision** (Anthropic Opus 4.7 + structured outputs)
-- [ ] Phase 4 — Quote engine + SOR CVXPY (Features 3 + 6)
+- [x] **Phase 4** — Quote engine + **real CVXPY SOR** (CLARABEL solver) + Wise-style breakdown + recharts pie
+- [ ] Phase 5 — Smart contract escrow on BSC testnet
 - [ ] Phase 3 — Document Intake Claude Vision (Feature 2)
 - [ ] Phase 4 — Quote Engine + SOR CVXPY (Features 3 + 6)
 - [ ] Phase 5 — Smart Contract Escrow on BSC testnet (Feature 4)
 - [ ] Phase 6 — Dashboard + transaction detail (Feature 5)
 - [ ] Phase 7 — Vue supplier + polish + seed + recording prep
+
+### Phase 4 deliverables (reference) — Quote engine + SOR CVXPY
+
+- **Manual setup once**: `cd services/sor && .venv/bin/pip install ecos clarabel` (CLARABEL ships with cvxpy now, ECOS as fallback). Run with `pnpm sor:dev` in a 2nd terminal during local dev.
+- `services/sor/app.py` — full CVXPY solver. Switched from ECOS to **CLARABEL** because ECOS hits `user_limit` / `optimal_inaccurate` on 50M+ NGN targets due to the large-NGN × small-bps conditioning. CLARABEL is more numerically robust on this problem shape.
+- Solver formulation: `minimize x@spreads + sum(alpha_i * quad_over_lin(x_i, depth_i))` s.t. `sum(x)=target, x<=depth, x<=max_share*target`. The cap is dropped when n=1 (else infeasible).
+- `services/sor/tests/test_optimize.py` — 5 tests (health + 1-source + 2-source-cap + 3-source-beats-baseline + cap-only-when-multi). All pass in 0.8s.
+- `apps/web/src/app/api/sources/[source]/quote/route.ts` — Route Handler serving 4 fake sources (`yellow_card`, `otc_desk_1`, `otc_desk_2`, `psp`). Deterministic per-minute seeded prices via FNV hash so demo is reproducible within the same minute.
+- `apps/web/src/lib/quote/sources.ts` — generator with realistic NGN/USDT base + per-source spread/depth/alpha + small Gaussian-like noise.
+- `apps/web/src/lib/quote/solver-fallback.ts` — TS greedy heuristic for when SOR Python service is unreachable (typically Vercel deploys, no Python runtime). Always feasible, deterministic, < 1ms.
+- `apps/web/src/lib/quote/actions.ts#getQuote` — Server Action that orchestrates: parallel fetch of 4 sources → tries CVXPY (2s timeout) → falls back to TS greedy → composes breakdown (NGN paid → USDT held → CNY delivered with PSP rate, platform fee 50bps, off-ramp, network fees, savings vs SWIFT 7.5%) → persists `transactions.{amount_*, quote_breakdown, sor_allocation}` + 1 `sor_executions` row per source. The chosen engine (`cvxpy` or `greedy_fallback`) is surfaced to the UI.
+- `apps/web/src/components/quote-breakdown-card.tsx` — Wise-style trio (NGN→USDT→CNY) with savings hero card, total cost, ETA, engine badge, collapsible cost breakdown. Tabular nums everywhere.
+- `apps/web/src/components/sor-allocation-chart.tsx` — recharts donut + per-source legend with predicted slippage (bps) + delay (s). Engine badge (CVXPY emerald / Greedy amber). Total cost vs baseline shown.
+- `apps/web/src/app/[locale]/transactions/[id]/page.tsx` — new transaction detail page (Phase 4 stub): header + parsed proforma summary + QuoteSection. Phase 6 will add timeline + tranches + audit log.
+- `apps/web/src/app/[locale]/transactions/[id]/quote-section.tsx` — Client Component: NGN amount input pre-filled from proforma USD × spot, "Get quote" button, animated parsing state, hydrates initial state from persisted DB if present, "Continue to escrow" disabled (Phase 5).
+- IntakeUploader CTA now redirects to `/transactions/[id]` instead of `/dashboard` so the flow is continuous.
+- Recharts (`recharts@3.8.1`) added as dep.
+- Full i18n FR/EN/zh under `quote` + `quote.breakdown` + `quote.sor` + `txDetail` namespaces.
+- Validation: typecheck ✓, build ✓ (now 18 routes including `/{fr,en,zh}/transactions/[id]` and `/api/sources/[source]/quote`), end-to-end smoke test :
+  - 4 source endpoints serve valid JSON with realistic prices
+  - SOR `/optimize` returns optimal allocation (60% to deepest source as expected)
+  - `/fr/transactions/[id]` renders Quote engine + Proforma extraite + counterparty card
+  - vs-baseline savings 135 bps on a 47M NGN test allocation
 
 ### Phase 3 deliverables (reference) — Document intake Claude Vision
 

@@ -165,6 +165,52 @@
       "continueCta": "Continuer vers le quote engine"
     }
   },
+  "txDetail": {
+    "back": "Retour au dashboard",
+    "unknownCounterparty": "Contrepartie inconnue",
+    "createdAt": "Créé le {date}",
+    "proformaTitle": "Proforma extraite",
+    "invoiceNumber": "N° facture",
+    "totalAmount": "Montant",
+    "incoterms": "Incoterms",
+    "issuedDate": "Date d'émission"
+  },
+  "quote": {
+    "inputTitle": "Quote engine",
+    "fromProforma": "Proforma : {amount}",
+    "amountLabel": "Combien veux-tu envoyer ? (NGN)",
+    "getQuote": "Lancer le quote",
+    "fetching": "Récupération en cours…",
+    "refresh": "Rafraîchir le quote",
+    "orchestrating": "3 sources interrogées en parallèle + SOR convexe",
+    "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
+    "continueEscrow": "Continuer vers l'escrow on-chain (Phase 5)",
+    "phase5Disabled": "Disponible en Phase 5",
+    "breakdown": {
+      "youPay": "Tu paies",
+      "usdtHeld": "USDT en escrow",
+      "supplierGets": "Le fournisseur reçoit",
+      "savings": "Tu économises",
+      "vsSwift": "vs SWIFT estimé à {swiftCost}",
+      "totalCost": "Coût total Yuán",
+      "eta": "Règlement T+0 · ~{seconds}s",
+      "engineCvxpy": "CVXPY",
+      "engineGreedy": "Greedy fallback",
+      "breakdownToggle": "Détail des coûts",
+      "fxCost": "Coût FX (spread + slippage)",
+      "platformFee": "Commission plateforme ({bps} bps)",
+      "offRamp": "Off-ramp USDT→CNY (PSP)",
+      "networkFees": "Frais réseau on-chain"
+    },
+    "sor": {
+      "title": "Allocation Smart Order Routing",
+      "subtitle": "3 sources NGN→USDT, optimiseur convexe sous contraintes",
+      "totalCost": "Coût total",
+      "vsBaseline": "vs baseline 60/40",
+      "engineCvxpy": "CVXPY ECOS",
+      "engineGreedy": "Greedy (fallback)"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — scaffolding monorepo. Les features arrivent dans les phases suivantes."
   }

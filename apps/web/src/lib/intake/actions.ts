@@ -16,6 +16,7 @@
  */
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import type { ZodType } from "zod";
 import { revalidatePath } from "next/cache";
 
 import { ORG_SUPPLIER_ID } from "@/lib/db/seed";
@@ -141,7 +142,13 @@ export async function parseProforma(formData: FormData): Promise<ParseProformaRe
         },
       ],
       messages: [{ role: "user", content: userContent }],
-      output_config: { format: zodOutputFormat(ProformaInvoiceSchema) },
+      // SDK quirk: zodOutputFormat's TS signature wants Zod v3 ZodType, but at
+      // runtime it imports `zod/v4` to generate the JSON schema. Our schema is
+      // built with `zod/v4` (required for the runtime to read `.def`), so we
+      // cast through `unknown` to satisfy the v3 sig. Either side alone breaks.
+      output_config: {
+        format: zodOutputFormat(ProformaInvoiceSchema as unknown as ZodType),
+      },
     });
 
     if (!response.parsed_output) {

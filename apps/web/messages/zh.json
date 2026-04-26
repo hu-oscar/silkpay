@@ -165,6 +165,52 @@
       "continueCta": "继续报价"
     }
   },
+  "txDetail": {
+    "back": "返回仪表板",
+    "unknownCounterparty": "未知对方",
+    "createdAt": "创建于 {date}",
+    "proformaTitle": "已解析的形式发票",
+    "invoiceNumber": "发票号",
+    "totalAmount": "金额",
+    "incoterms": "贸易术语",
+    "issuedDate": "开具日期"
+  },
+  "quote": {
+    "inputTitle": "报价引擎",
+    "fromProforma": "形式发票:{amount}",
+    "amountLabel": "您想发送多少?(奈拉)",
+    "getQuote": "获取报价",
+    "fetching": "获取中…",
+    "refresh": "刷新报价",
+    "orchestrating": "并行查询 3 个来源 + 凸优化 SOR",
+    "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
+    "continueEscrow": "继续到链上托管(阶段 5)",
+    "phase5Disabled": "阶段 5 可用",
+    "breakdown": {
+      "youPay": "您支付",
+      "usdtHeld": "托管中 USDT",
+      "supplierGets": "供应商收到",
+      "savings": "您节省",
+      "vsSwift": "对比 SWIFT 估算 {swiftCost}",
+      "totalCost": "Yuán 总成本",
+      "eta": "T+0 结算 · 约 {seconds} 秒",
+      "engineCvxpy": "CVXPY",
+      "engineGreedy": "贪心回退",
+      "breakdownToggle": "成本明细",
+      "fxCost": "汇率成本(点差 + 滑点)",
+      "platformFee": "平台费({bps} 基点)",
+      "offRamp": "USDT→CNY 出金(PSP)",
+      "networkFees": "链上手续费"
+    },
+    "sor": {
+      "title": "智能订单路由分配",
+      "subtitle": "3 个 NGN→USDT 来源,凸优化器约束求解",
+      "totalCost": "总成本",
+      "vsBaseline": "对比 60/40 基线",
+      "engineCvxpy": "CVXPY ECOS",
+      "engineGreedy": "贪心(回退)"
+    }
+  },
   "footer": {
     "phase0Notice": "阶段 0 — 单一代码库脚手架。功能将在后续阶段交付。"
   }

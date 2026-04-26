@@ -67,3 +67,4 @@ coverage/
 *.tgz
 .eslintcache
 .stylelintcache
+.vercel

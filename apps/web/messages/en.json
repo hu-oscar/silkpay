@@ -165,6 +165,52 @@
       "continueCta": "Continue to quote engine"
     }
   },
+  "txDetail": {
+    "back": "Back to dashboard",
+    "unknownCounterparty": "Unknown counterparty",
+    "createdAt": "Created on {date}",
+    "proformaTitle": "Parsed proforma",
+    "invoiceNumber": "Invoice #",
+    "totalAmount": "Amount",
+    "incoterms": "Incoterms",
+    "issuedDate": "Issued date"
+  },
+  "quote": {
+    "inputTitle": "Quote engine",
+    "fromProforma": "Proforma: {amount}",
+    "amountLabel": "How much do you want to send? (NGN)",
+    "getQuote": "Get quote",
+    "fetching": "Fetching…",
+    "refresh": "Refresh quote",
+    "orchestrating": "Querying 3 sources in parallel + convex SOR solver",
+    "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
+    "continueEscrow": "Continue to on-chain escrow (Phase 5)",
+    "phase5Disabled": "Available in Phase 5",
+    "breakdown": {
+      "youPay": "You pay",
+      "usdtHeld": "USDT in escrow",
+      "supplierGets": "Supplier receives",
+      "savings": "You save",
+      "vsSwift": "vs SWIFT estimated at {swiftCost}",
+      "totalCost": "Yuán total cost",
+      "eta": "T+0 settlement · ~{seconds}s",
+      "engineCvxpy": "CVXPY",
+      "engineGreedy": "Greedy fallback",
+      "breakdownToggle": "Cost breakdown",
+      "fxCost": "FX cost (spread + slippage)",
+      "platformFee": "Platform fee ({bps} bps)",
+      "offRamp": "USDT→CNY off-ramp (PSP)",
+      "networkFees": "On-chain network fees"
+    },
+    "sor": {
+      "title": "Smart Order Routing allocation",
+      "subtitle": "3 NGN→USDT sources, convex optimizer under constraints",
+      "totalCost": "Total cost",
+      "vsBaseline": "vs 60/40 baseline",
+      "engineCvxpy": "CVXPY ECOS",
+      "engineGreedy": "Greedy (fallback)"
+    }
+  },
   "footer": {
     "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."
   }
