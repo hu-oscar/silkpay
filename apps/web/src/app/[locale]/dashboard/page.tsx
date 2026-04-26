@@ -1,4 +1,4 @@
-import { ArrowUpRight, Banknote, CheckCircle2, ListChecks } from "lucide-react";
+import { ArrowUpRight, Banknote, CheckCircle2, ListChecks, ShieldCheck } from "lucide-react";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -57,12 +57,18 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         <p className="text-sm text-ink-500">{t("subtitle")}</p>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           icon={<Banknote className="h-4 w-4" />}
           label={t("kpis.totalSaved")}
           value={fmtUsd(kpis.total_saved_usd)}
           tone="emerald"
+        />
+        <KpiCard
+          icon={<ShieldCheck className="h-4 w-4" />}
+          label={t("kpis.totalInEscrow")}
+          value={fmtUsdt(kpis.total_in_escrow_usdt)}
+          tone="brand"
         />
         <KpiCard
           icon={<ListChecks className="h-4 w-4" />}
@@ -105,8 +111,17 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
                     className="grid items-center gap-2 px-4 py-3 transition-colors hover:bg-ink-50 sm:grid-cols-[1fr_auto_auto_auto]"
                   >
                     <div>
-                      <p className="text-sm font-medium text-ink-900 truncate">
+                      <p className="text-sm font-medium text-ink-900 truncate inline-flex items-center gap-1.5">
                         {counterparty?.legal_name ?? t("transactions.unknownCounterparty")}
+                        {tx.escrow_address && (
+                          <span
+                            title={t("transactions.escrowDeployed")}
+                            className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-emerald-700"
+                          >
+                            <ShieldCheck className="h-2.5 w-2.5" />
+                            {t("transactions.escrowBadge")}
+                          </span>
+                        )}
                       </p>
                       <p className="text-xs text-ink-500">
                         {format.dateTime(new Date(tx.updated_at), {

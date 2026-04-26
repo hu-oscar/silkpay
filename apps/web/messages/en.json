@@ -59,6 +59,7 @@
     "subtitle": "Here's where your cross-border payments stand.",
     "kpis": {
       "totalSaved": "Saved vs SWIFT",
+      "totalInEscrow": "On-chain escrow",
       "activeCount": "Active transactions",
       "settledCount": "Settled"
     },
@@ -66,7 +67,9 @@
       "title": "Recent transactions",
       "new": "New transaction",
       "empty": "No transactions yet. Start your first order.",
-      "unknownCounterparty": "Unknown counterparty"
+      "unknownCounterparty": "Unknown counterparty",
+      "escrowBadge": "escrow",
+      "escrowDeployed": "Escrow contract deployed on Sepolia"
     },
     "status": {
       "drafted": "Draft",
@@ -242,6 +245,41 @@
     "attesting": "Signing on-chain…",
     "overdue": "Deadline passed — refundable",
     "dueIn": "deadline {date}"
+  },
+  "timeline": {
+    "title": "Transaction journey",
+    "current": "In progress",
+    "phase": {
+      "drafted": "Document parsed",
+      "quoted": "Quote calculated",
+      "funded": "Escrow funded",
+      "in_transit": "In transit + inspection",
+      "settled": "Settled"
+    },
+    "phaseHint": {
+      "drafted": "Proforma extracted by Claude Vision",
+      "quoted": "Routed across 3 NGN→USDT sources",
+      "funded": "USDT locked on-chain · 3 tranches",
+      "in_transit": "Bill of Lading · CCIC inspection · delivery",
+      "settled": "USDT released to the supplier"
+    },
+    "halted": {
+      "disputed": "Transaction in dispute — frozen until arbitration.",
+      "refunded": "Funds returned to buyer (timeout or dispute resolution).",
+      "cancelled": "Transaction cancelled before funding."
+    }
+  },
+  "auditLog": {
+    "title": "Audit log",
+    "empty": "No events recorded yet.",
+    "viewOnEtherscan": "View tx on Etherscan",
+    "event": {
+      "proforma_parsed": "Proforma parsed by Claude Vision",
+      "quote_calculated": "Quote calculated · 3-source SOR",
+      "escrow_funded": "Escrow deployed + funded on Sepolia",
+      "milestone_attested": "Milestone attested by arbiter",
+      "tranche_claimed": "Tranche claimed by supplier"
+    }
   },
   "footer": {
     "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."

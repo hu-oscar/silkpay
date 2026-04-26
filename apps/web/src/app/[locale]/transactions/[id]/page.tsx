@@ -9,6 +9,8 @@ import { ArrowLeft, FileText } from "lucide-react";
 import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { AuditLog } from "@/components/audit-log";
+import { TransactionTimeline } from "@/components/transaction-timeline";
 import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getTransactionById } from "@/lib/db/queries";
@@ -116,6 +118,8 @@ export default async function TransactionDetailPage({
         </div>
       )}
 
+      <TransactionTimeline status={tx.status} />
+
       <QuoteSection
         transactionId={tx.id}
         defaultTargetUsd={proforma?.total_amount ?? null}
@@ -127,6 +131,8 @@ export default async function TransactionDetailPage({
         escrowAddress={tx.escrow_address ?? null}
         hasQuote={Boolean(tx.amount_usdt && Number(tx.amount_usdt) > 0)}
       />
+
+      <AuditLog transactionId={tx.id} />
     </div>
   );
 }

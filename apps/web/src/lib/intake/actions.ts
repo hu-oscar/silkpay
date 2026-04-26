@@ -218,6 +218,23 @@ export async function parseProforma(formData: FormData): Promise<ParseProformaRe
     return { ok: false, code: "DB_ERROR", message: insertErr.message };
   }
 
+  await supabase.from("audit_events").insert({
+    id: crypto.randomUUID(),
+    transaction_id: transactionId,
+    actor_id: null,
+    actor_type: "system",
+    event_type: "proforma_parsed",
+    payload: {
+      invoice_number: parsed.invoice_number ?? null,
+      total_amount: parsed.total_amount ?? null,
+      currency: parsed.currency ?? null,
+      confidence_score: parsed.confidence_score ?? null,
+      latency_ms: latencyMs,
+    },
+    on_chain_tx_hash: null,
+    created_at: new Date().toISOString(),
+  });
+
   revalidatePath("/", "layout");
   return { ok: true, transactionId, parsed, cost_usd: costUsd, latency_ms: latencyMs };
 }

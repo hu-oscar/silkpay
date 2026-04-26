@@ -59,6 +59,7 @@
     "subtitle": "Voici l'état de tes paiements transfrontaliers.",
     "kpis": {
       "totalSaved": "Économisé vs SWIFT",
+      "totalInEscrow": "En escrow on-chain",
       "activeCount": "Transactions actives",
       "settledCount": "Réglées"
     },
@@ -66,7 +67,9 @@
       "title": "Transactions récentes",
       "new": "Nouvelle transaction",
       "empty": "Aucune transaction pour le moment. Lance ta première commande.",
-      "unknownCounterparty": "Contrepartie inconnue"
+      "unknownCounterparty": "Contrepartie inconnue",
+      "escrowBadge": "escrow",
+      "escrowDeployed": "Contrat d'escrow déployé sur Sepolia"
     },
     "status": {
       "drafted": "Brouillon",
@@ -242,6 +245,41 @@
     "attesting": "Signature on-chain…",
     "overdue": "Deadline dépassée — refundable",
     "dueIn": "deadline {date}"
+  },
+  "timeline": {
+    "title": "Parcours de la transaction",
+    "current": "En cours",
+    "phase": {
+      "drafted": "Document parsé",
+      "quoted": "Quote calculé",
+      "funded": "Escrow fundé",
+      "in_transit": "En transit + inspection",
+      "settled": "Réglé"
+    },
+    "phaseHint": {
+      "drafted": "Proforma extraite par Claude Vision",
+      "quoted": "Routing optimisé sur 3 sources NGN→USDT",
+      "funded": "USDT verrouillés on-chain · 3 tranches",
+      "in_transit": "Bill of Lading · inspection CCIC · livraison",
+      "settled": "USDT débloqués vers le fournisseur"
+    },
+    "halted": {
+      "disputed": "Transaction en litige — gelée jusqu'à arbitrage.",
+      "refunded": "Fonds retournés à l'acheteur (timeout ou résolution litige).",
+      "cancelled": "Transaction annulée avant funding."
+    }
+  },
+  "auditLog": {
+    "title": "Journal d'audit",
+    "empty": "Aucun événement enregistré pour le moment.",
+    "viewOnEtherscan": "Voir la tx sur Etherscan",
+    "event": {
+      "proforma_parsed": "Proforma parsée par Claude Vision",
+      "quote_calculated": "Quote calculé · SOR 3 sources",
+      "escrow_funded": "Escrow déployé + fundé sur Sepolia",
+      "milestone_attested": "Jalon attesté par l'arbiter",
+      "tranche_claimed": "Tranche claim par le fournisseur"
+    }
   },
   "footer": {
     "phase0Notice": "Phase 0 — scaffolding monorepo. Les features arrivent dans les phases suivantes."

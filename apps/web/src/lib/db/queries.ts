@@ -106,22 +106,34 @@ export async function listAuditEventsForTransaction(txId: string): Promise<Audit
 export type OrgKpis = {
   total_saved_usd: number;
   total_tpv_usdt: number;
+  total_in_escrow_usdt: number;
   active_count: number;
   settled_count: number;
 };
 
 const TERMINAL_STATUSES: ReadonlyArray<TxStatus> = ["settled", "cancelled", "refunded"];
+const IN_ESCROW_STATUSES: ReadonlyArray<TxStatus> = [
+  "funded",
+  "in_transit",
+  "inspected",
+  "delivered",
+  "settling",
+];
 
 export async function getOrgKpis(orgId: string): Promise<OrgKpis> {
   const txs = await listTransactionsForOrg(orgId);
   const settled = txs.filter((t) => t.status === "settled");
   const active = txs.filter((t) => !TERMINAL_STATUSES.includes(t.status));
+  const inEscrow = txs.filter((t) => IN_ESCROW_STATUSES.includes(t.status));
+  // Quote-stage savings count too — useful for demo where settled rarely happens live.
+  const projectedSavings = txs.reduce(
+    (sum, t) => sum + (t.quote_breakdown?.savings_vs_swift_usd ?? 0),
+    0,
+  );
   return {
-    total_saved_usd: settled.reduce(
-      (sum, t) => sum + (t.quote_breakdown?.savings_vs_swift_usd ?? 0),
-      0,
-    ),
+    total_saved_usd: projectedSavings,
     total_tpv_usdt: txs.reduce((sum, t) => sum + (t.amount_usdt ?? 0), 0),
+    total_in_escrow_usdt: inEscrow.reduce((sum, t) => sum + (t.amount_usdt ?? 0), 0),
     active_count: active.length,
     settled_count: settled.length,
   };

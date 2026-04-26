@@ -215,6 +215,24 @@ export async function getQuote(input: {
   }));
   await supabase.from("sor_executions").insert(sorRows);
 
+  await supabase.from("audit_events").insert({
+    id: crypto.randomUUID(),
+    transaction_id: input.transactionId,
+    actor_id: null,
+    actor_type: "system",
+    event_type: "quote_calculated",
+    payload: {
+      ngn_paid: ngnPaid,
+      usdt_received: usdtReceived,
+      cny_delivered: cnyDelivered,
+      savings_vs_swift_usd: breakdown.savings_vs_swift_usd,
+      sor_engine: engine,
+      sor_total_cost_bps: sor.total_cost_bps,
+    },
+    on_chain_tx_hash: null,
+    created_at: new Date().toISOString(),
+  });
+
   revalidatePath("/", "layout");
 
   return {
