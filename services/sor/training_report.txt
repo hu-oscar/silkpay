@@ -1,6 +1,6 @@
 Yuán SOR — XGBoost slippage model
 ==================================
-version            : v20260426-064118
+version            : v20260426-073844
 samples (train/test): 160,000 / 40,000
 
 hold-out metrics

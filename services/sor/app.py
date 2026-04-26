@@ -313,8 +313,10 @@ def optimize_ml(req: OptimizeMlRequest) -> OptimizeResponse:
             for i in range(n)
         ]
     )
-    # Hard floor — floating noise can produce sub-eps alphas which break CVXPY.
-    alphas_predicted = np.clip(alphas_predicted, a_min=0.1, a_max=None)
+    # Tiny floor to keep CVXPY happy on degenerate predictions, but well below
+    # any realistic alpha (the synthetic DGP yields 0.02–0.05 for typical fills,
+    # so a 0.1 floor would silently 5× the true cost).
+    alphas_predicted = np.clip(alphas_predicted, a_min=1e-4, a_max=None)
 
     x_opt, opt_cost, base_cost, status = _solve(
         req.target_ngn, spreads, depths, alphas_predicted, delays, ids, prices, req.max_share_per_source
