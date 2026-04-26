@@ -143,15 +143,7 @@ export function QuoteSection({
             vsBaselineSavingsBps={result.sor.vs_baseline_savings_bps}
             engine={result.engine}
           />
-          <button
-            type="button"
-            disabled
-            className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-ink-200 bg-white px-5 py-3 text-sm font-medium text-ink-400 cursor-not-allowed"
-            title={t("phase5Disabled")}
-          >
-            {t("continueEscrow")}
-            <ArrowRight className="h-4 w-4" />
-          </button>
+          <p className="text-xs text-ink-500 text-center">{t("escrowSectionHint")}</p>
         </div>
       )}
 

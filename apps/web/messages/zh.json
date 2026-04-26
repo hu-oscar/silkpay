@@ -185,8 +185,7 @@
     "refresh": "刷新报价",
     "orchestrating": "并行查询 3 个来源 + 凸优化 SOR",
     "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
-    "continueEscrow": "继续到链上托管(阶段 5)",
-    "phase5Disabled": "阶段 5 可用",
+    "escrowSectionHint": "↓ 下一步:在下方部署链上托管",
     "breakdown": {
       "youPay": "您支付",
       "usdtHeld": "托管中 USDT",
@@ -211,6 +210,38 @@
       "engineCvxpy": "CVXPY ECOS",
       "engineGreedy": "贪心(回退)"
     }
+  },
+  "escrow": {
+    "title": "链上托管 · Sepolia 测试网",
+    "subtitleFunded": "✓ 已托管 {amount} — 按阶段经认证后释放",
+    "subtitleNotFunded": "合约已部署,等待充值",
+    "fundTitle": "部署并充值托管合约",
+    "fundDescription": "Yuán 在 Sepolia 测试网部署新的 TradeEscrow 合约,铸造 mUSDT,并将报价中的 USDT 金额充入合约。链上 3 笔交易顺序执行。(V1 生产:BNB Chain 主网 + USDT BEP-20。)",
+    "fundCta": "部署并充值",
+    "funding": "链上部署中…",
+    "fundingSteps": "1/3 factory.create → 2/3 mUSDT.approve → 3/3 escrow.fund",
+    "fundedSuccess": "托管合约已在 Sepolia 部署并充值",
+    "viewFundingTx": "在 Etherscan 查看充值交易",
+    "loading": "读取链上状态中…",
+    "readFailed": "无法读取合约状态。请检查地址和 Sepolia RPC。",
+    "waitForQuote": "请先在上方运行报价引擎,再充值托管。",
+    "tranche": "阶段 {n}({pct}%)",
+    "condition": {
+      "bl_signed": "提单已签署",
+      "inspection_certified": "CCIC 检验认证",
+      "delivery_acknowledged": "确认收货"
+    },
+    "status": {
+      "pending": "等待认证",
+      "attested": "✓ 已认证 — 供应商可领取",
+      "released": "已释放 — USDT 已发送给供应商",
+      "refunded": "退还买方(超时)",
+      "disputed": "争议中"
+    },
+    "attest": "认证(仲裁方)",
+    "attesting": "链上签署中…",
+    "overdue": "已超期 — 可退款",
+    "dueIn": "截止 {date}"
   },
   "footer": {
     "phase0Notice": "阶段 0 — 单一代码库脚手架。功能将在后续阶段交付。"

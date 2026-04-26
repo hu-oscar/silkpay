@@ -23,8 +23,12 @@ const envSchema = z.object({
   // SOR Python service — Phase 4
   SOR_SERVICE_URL: z.string().url().default("http://localhost:8000"),
 
-  // BSC testnet — Phase 5
-  BSC_TESTNET_RPC: z.string().url().default("https://data-seed-prebsc-1-s1.binance.org:8545"),
+  // Sepolia testnet — Phase 5 (switched from BSC testnet because BNB faucets
+  // require pre-existing mainnet BNB. Sepolia faucets — Alchemy, drpc, Google
+  // Cloud — are far more permissive. Solidity is chain-agnostic so the same
+  // Foundry tests + contracts run identically. V1 prod still targets BNB
+  // Chain mainnet + USDT BEP-20.)
+  SEPOLIA_RPC: z.string().url().default("https://ethereum-sepolia-rpc.publicnode.com"),
   NEXT_PUBLIC_MOCK_USDT_ADDRESS: z.preprocess(
     (v) => (v === "" ? undefined : v),
     z.string().optional(),
@@ -42,7 +46,7 @@ export const env = envSchema.parse({
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   SOR_SERVICE_URL: process.env.SOR_SERVICE_URL,
-  BSC_TESTNET_RPC: process.env.BSC_TESTNET_RPC,
+  SEPOLIA_RPC: process.env.SEPOLIA_RPC,
   NEXT_PUBLIC_MOCK_USDT_ADDRESS: process.env.NEXT_PUBLIC_MOCK_USDT_ADDRESS,
   NEXT_PUBLIC_ESCROW_FACTORY_ADDRESS: process.env.NEXT_PUBLIC_ESCROW_FACTORY_ADDRESS,
 });

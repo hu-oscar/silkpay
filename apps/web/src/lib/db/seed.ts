@@ -138,7 +138,7 @@ export const seedTransactions: Transaction[] = [
       },
     },
     escrow_address: "0x7a3F0000000000000000000000000000000Ae29B",
-    escrow_chain: "bsc-testnet",
+    escrow_chain: "sepolia",
     sor_allocation: {
       allocations: [
         {
@@ -201,7 +201,7 @@ export const seedTransactions: Transaction[] = [
       },
     },
     escrow_address: "0x7a3F0000000000000000000000000000000Bf83C",
-    escrow_chain: "bsc-testnet",
+    escrow_chain: "sepolia",
     sor_allocation: {
       allocations: [
         {
@@ -256,7 +256,7 @@ export const seedTransactions: Transaction[] = [
     },
     parsed_documents: null,
     escrow_address: null,
-    escrow_chain: "bsc-testnet",
+    escrow_chain: "sepolia",
     sor_allocation: {
       allocations: [
         {

@@ -185,8 +185,7 @@
     "refresh": "Refresh quote",
     "orchestrating": "Querying 3 sources in parallel + convex SOR solver",
     "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
-    "continueEscrow": "Continue to on-chain escrow (Phase 5)",
-    "phase5Disabled": "Available in Phase 5",
+    "escrowSectionHint": "↓ Next step : deploy the on-chain escrow below",
     "breakdown": {
       "youPay": "You pay",
       "usdtHeld": "USDT in escrow",
@@ -211,6 +210,38 @@
       "engineCvxpy": "CVXPY ECOS",
       "engineGreedy": "Greedy (fallback)"
     }
+  },
+  "escrow": {
+    "title": "On-chain escrow · Sepolia testnet",
+    "subtitleFunded": "✓ {amount} held in escrow — released per tranche after attestation",
+    "subtitleNotFunded": "Contract deployed, awaiting funding",
+    "fundTitle": "Deploy + fund the escrow",
+    "fundDescription": "Yuán deploys a fresh TradeEscrow contract on Sepolia testnet, mints mUSDT, and funds the contract with the quoted USDT amount. 3 on-chain transactions chained. (V1 prod: BNB Chain mainnet + USDT BEP-20.)",
+    "fundCta": "Deploy + fund the escrow",
+    "funding": "On-chain deployment in progress…",
+    "fundingSteps": "1/3 factory.create → 2/3 mUSDT.approve → 3/3 escrow.fund",
+    "fundedSuccess": "Escrow deployed and funded on Sepolia",
+    "viewFundingTx": "View fund tx on Etherscan",
+    "loading": "Reading on-chain state…",
+    "readFailed": "Could not read contract state. Check the address + your Sepolia RPC.",
+    "waitForQuote": "Run the quote engine above before funding the escrow.",
+    "tranche": "Tranche {n} ({pct}%)",
+    "condition": {
+      "bl_signed": "Bill of Lading signed",
+      "inspection_certified": "CCIC inspection certified",
+      "delivery_acknowledged": "Delivery acknowledged"
+    },
+    "status": {
+      "pending": "Awaiting attestation",
+      "attested": "✓ Attested — claimable by supplier",
+      "released": "Released — USDT sent to supplier",
+      "refunded": "Refunded to buyer (timeout)",
+      "disputed": "In dispute"
+    },
+    "attest": "Attest (arbiter)",
+    "attesting": "Signing on-chain…",
+    "overdue": "Deadline passed — refundable",
+    "dueIn": "deadline {date}"
   },
   "footer": {
     "phase0Notice": "Phase 0 — monorepo scaffolding. Features land in the following phases."

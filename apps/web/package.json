@@ -25,6 +25,7 @@
     "recharts": "^3.8.1",
     "server-only": "^0.0.1",
     "tailwind-merge": "^2.6.0",
+    "viem": "^2.48.4",
     "zod": "^3.24.1"
   },
   "devDependencies": {

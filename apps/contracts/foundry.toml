@@ -21,7 +21,7 @@ quote_style = "double"
 number_underscore = "thousands"
 
 [rpc_endpoints]
-bsc_testnet = "${BSC_TESTNET_RPC}"
+sepolia = "${SEPOLIA_RPC}"
 
 [etherscan]
-bsc_testnet = { key = "${BSCSCAN_API_KEY}", url = "https://api-testnet.bscscan.com/api", chain = 97 }
+sepolia = { key = "${ETHERSCAN_API_KEY}", url = "https://api-sepolia.etherscan.io/api", chain = 11155111 }
