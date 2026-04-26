@@ -13,6 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getTransactionById } from "@/lib/db/queries";
 
+import { EscrowSection } from "./escrow-section";
 import { QuoteSection } from "./quote-section";
 
 export default async function TransactionDetailPage({
@@ -119,6 +120,12 @@ export default async function TransactionDetailPage({
         transactionId={tx.id}
         defaultTargetUsd={proforma?.total_amount ?? null}
         initialQuote={initialQuote}
+      />
+
+      <EscrowSection
+        transactionId={tx.id}
+        escrowAddress={tx.escrow_address ?? null}
+        hasQuote={Boolean(tx.amount_usdt && Number(tx.amount_usdt) > 0)}
       />
     </div>
   );
