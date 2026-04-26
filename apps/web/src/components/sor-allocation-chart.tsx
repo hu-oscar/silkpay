@@ -8,11 +8,11 @@
  * badge (CVXPY ✓ or Greedy fallback) is surfaced so the demo can show the
  * tech credentials without hiding the fallback.
  */
-import { Activity, Clock, Cpu } from "lucide-react";
+import { Activity, Brain, Clock, Cpu, Sparkles } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-import type { SorAllocation } from "@/lib/quote/schemas";
+import type { FeatureContribution, SorAllocation, SolverEngine } from "@/lib/quote/schemas";
 import { cn } from "@/lib/utils";
 
 const COLORS = [
@@ -32,11 +32,15 @@ export function SorAllocationChart({
   totalCostBps,
   vsBaselineSavingsBps,
   engine,
+  modelVersion,
+  topFeatures,
 }: {
   allocation: SorAllocation[];
   totalCostBps: number;
   vsBaselineSavingsBps: number;
-  engine: "cvxpy" | "greedy_fallback";
+  engine: SolverEngine;
+  modelVersion?: string | null;
+  topFeatures?: FeatureContribution[];
 }) {
   const t = useTranslations("quote.sor");
   const format = useFormatter();
@@ -154,12 +158,68 @@ export function SorAllocationChart({
           </p>
         </div>
       </div>
+
+      {engine === "xgboost+cvxpy" && topFeatures && topFeatures.length > 0 && (
+        <WhyPanel modelVersion={modelVersion ?? null} topFeatures={topFeatures} />
+      )}
     </div>
   );
 }
 
-function EngineBadge({ engine }: { engine: "cvxpy" | "greedy_fallback" }) {
+function WhyPanel({
+  modelVersion,
+  topFeatures,
+}: {
+  modelVersion: string | null;
+  topFeatures: FeatureContribution[];
+}) {
+  const t = useTranslations("quote.why");
+  return (
+    <div className="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50/80 to-brand-50/40 p-4 space-y-3">
+      <header className="flex items-center justify-between gap-2">
+        <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-900">
+          <Brain className="h-3.5 w-3.5" />
+          {t("title")}
+        </p>
+        {modelVersion && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-medium tnum text-violet-900 border border-violet-200">
+            <Sparkles className="h-2.5 w-2.5" />
+            XGBoost · {modelVersion}
+          </span>
+        )}
+      </header>
+      <p className="text-xs text-ink-600">{t("subtitle")}</p>
+      <ul className="space-y-1.5">
+        {topFeatures.map((f, i) => (
+          <li
+            key={f.feature}
+            className="flex items-center gap-3 text-sm animate-fade-up"
+            style={{ animationDelay: `${i * 80}ms` }}
+          >
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-violet-200 text-[10px] font-bold text-violet-900 tnum">
+              {i + 1}
+            </span>
+            <span className="flex-1 text-ink-900">{t(`feature.${f.label}`)}</span>
+            <span className="tnum text-xs font-semibold text-violet-700">
+              {(f.importance * 100).toFixed(1)}%
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function EngineBadge({ engine }: { engine: SolverEngine }) {
   const t = useTranslations("quote.sor");
+  if (engine === "xgboost+cvxpy") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2.5 py-0.5 text-[10px] font-semibold text-violet-800">
+        <Brain className="h-3 w-3" />
+        {t("engineXgbCvxpy")}
+      </span>
+    );
+  }
   if (engine === "cvxpy") {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-800">

@@ -1,0 +1,22 @@
+Yuán SOR — XGBoost slippage model
+==================================
+version            : v20260426-064118
+samples (train/test): 160,000 / 40,000
+
+hold-out metrics
+  MAE  :    5.14 bps
+  RMSE :    9.76 bps
+  R²   :  0.9698
+  vs linear baseline MAE : 17.24 bps  (+70.2% better)
+
+top feature importances
+  size_ngn               51.82%
+  depth_ngn              10.11%
+  hour_of_day             9.04%
+  is_yellow_card          7.37%
+  is_otc_1                6.61%
+  is_otc_2                6.09%
+  is_month_end            5.21%
+  ngn_vol_24h             3.34%
+  spread_bps              0.23%
+  day_of_week             0.18%

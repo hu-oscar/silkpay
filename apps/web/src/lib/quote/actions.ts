@@ -245,49 +245,124 @@ export async function getQuote(input: {
   };
 }
 
+/**
+ * Compute Lagos-local market context features the XGBoost slippage model
+ * expects. NGN volatility is currently a stub — V2 will pull from a Modal
+ * job tracking realized vol on Yellow Card / Bybit / OKX P2P.
+ */
+function buildMarketContext(): {
+  hour_of_day: number;
+  day_of_week: number;
+  is_month_end: number;
+  ngn_vol_24h: number;
+} {
+  // Lagos = UTC+1, no DST.
+  const nowUtc = new Date();
+  const lagosMs = nowUtc.getTime() + 60 * 60 * 1000;
+  const lagos = new Date(lagosMs);
+  const hour = lagos.getUTCHours();
+  const jsDow = lagos.getUTCDay(); // Sun=0..Sat=6
+  const dow = (jsDow + 6) % 7; // Mon=0..Sun=6, matches train.py
+  // is_month_end ≈ within last 2 calendar days (proxy for last 2 BDs).
+  const lastDay = new Date(
+    Date.UTC(lagos.getUTCFullYear(), lagos.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  const dom = lagos.getUTCDate();
+  const isMonthEnd = lastDay - dom <= 1 ? 1 : 0;
+  // NGN/USDT 24h vol stub. Realistic 30–80 bps range under normal conditions.
+  // V2 : derive from Bybit P2P snapshots logged by Modal scheduled job.
+  const ngnVol24h = 45;
+  return {
+    hour_of_day: hour,
+    day_of_week: dow,
+    is_month_end: isMonthEnd,
+    ngn_vol_24h: ngnVol24h,
+  };
+}
+
 async function runSolver(
   targetNgn: number,
   sources: SourceQuote[],
 ): Promise<{ sor: SorOptimizeResponse; engine: SolverEngine }> {
   const url = env.SOR_SERVICE_URL;
-  // Try CVXPY first with a 2 s timeout (we don't want to block the user
-  // when the Python service is down or asleep).
-  if (url) {
-    try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 2_000);
-      const res = await fetch(`${url}/optimize`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          target_ngn: targetNgn,
-          sources: sources.map((s) => ({
-            source_id: s.source_id,
-            price_ngn_per_usdt: s.price_ngn_per_usdt,
-            spread_bps: s.spread_bps,
-            depth_ngn: s.depth_ngn,
-            alpha_slippage: s.alpha_slippage,
-            delay_seconds: s.delay_seconds,
-          })),
-        }),
-        signal: ctrl.signal,
-        cache: "no-store",
-      });
-      clearTimeout(timer);
-      if (res.ok) {
-        const json = await res.json();
-        const parsed = SorOptimizeResponseSchema.parse({
-          ...json,
-          allocation: json.allocation.map((a: { source_id: string; [k: string]: unknown }) => ({
-            ...a,
-            display_name: sources.find((s) => s.source_id === a.source_id)?.display_name,
-          })),
-        });
-        return { sor: parsed, engine: "cvxpy" };
-      }
-    } catch {
-      // Swallow and fall back below.
-    }
+  if (!url) {
+    return { sor: solveGreedy(targetNgn, sources), engine: "greedy_fallback" };
   }
+
+  // 1. Try the ML-calibrated path first — XGBoost predicts per-source slippage
+  //    coefficients, then CVXPY ECOS solves the convex allocation problem.
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5_000);
+    const res = await fetch(`${url}/optimize_ml`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        target_ngn: targetNgn,
+        context: buildMarketContext(),
+        sources: sources.map((s) => ({
+          source_id: s.source_id,
+          price_ngn_per_usdt: s.price_ngn_per_usdt,
+          spread_bps: s.spread_bps,
+          depth_ngn: s.depth_ngn,
+          delay_seconds: s.delay_seconds,
+        })),
+      }),
+      signal: ctrl.signal,
+      cache: "no-store",
+    });
+    clearTimeout(timer);
+    if (res.ok) {
+      const json = await res.json();
+      const parsed = SorOptimizeResponseSchema.parse({
+        ...json,
+        allocation: json.allocation.map((a: { source_id: string; [k: string]: unknown }) => ({
+          ...a,
+          display_name: sources.find((s) => s.source_id === a.source_id)?.display_name,
+        })),
+      });
+      return { sor: parsed, engine: "xgboost+cvxpy" };
+    }
+  } catch {
+    // Fall through to /optimize (model not loaded, timeout, etc.)
+  }
+
+  // 2. Fall back to the legacy CVXPY-only path with hardcoded alphas.
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2_000);
+    const res = await fetch(`${url}/optimize`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        target_ngn: targetNgn,
+        sources: sources.map((s) => ({
+          source_id: s.source_id,
+          price_ngn_per_usdt: s.price_ngn_per_usdt,
+          spread_bps: s.spread_bps,
+          depth_ngn: s.depth_ngn,
+          alpha_slippage: s.alpha_slippage,
+          delay_seconds: s.delay_seconds,
+        })),
+      }),
+      signal: ctrl.signal,
+      cache: "no-store",
+    });
+    clearTimeout(timer);
+    if (res.ok) {
+      const json = await res.json();
+      const parsed = SorOptimizeResponseSchema.parse({
+        ...json,
+        allocation: json.allocation.map((a: { source_id: string; [k: string]: unknown }) => ({
+          ...a,
+          display_name: sources.find((s) => s.source_id === a.source_id)?.display_name,
+        })),
+      });
+      return { sor: parsed, engine: "cvxpy" };
+    }
+  } catch {
+    // Final fallback below.
+  }
+
   return { sor: solveGreedy(targetNgn, sources), engine: "greedy_fallback" };
 }

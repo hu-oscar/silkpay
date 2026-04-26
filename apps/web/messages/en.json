@@ -200,13 +200,33 @@
     "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
     "escrowSectionHint": "↓ Next step : deploy the on-chain escrow below",
     "stream": {
-      "title": "Smart Order Router · AI agent in action",
-      "subtitle": "3 NGN→USDT liquidity sources queried in parallel + convex solver",
+      "title": "Smart Order Router ML · AI agent in action",
+      "subtitle": "XGBoost predicts per-source slippage · CVXPY solves the optimal allocation",
       "yellowCard": "Fetching Yellow Card order book",
       "otc1": "Quoting OTC Desk #1 (Binance OTC)",
       "otc2": "Quoting OTC Desk #2 (Hashkey)",
       "psp": "USDT→CNY off-ramp PSP rate (Onafriq)",
-      "solve": "Solving the convex program (CVXPY ECOS)"
+      "loadModel": "Loading XGBoost model (trained on 200k P2P snapshots)",
+      "predictSlippage": "Predicting slippage per source (hour, depth, NGN volatility)",
+      "buildProblem": "Building the convex program (objective + constraints)",
+      "solve": "CVXPY CLARABEL solve — global optimum allocation",
+      "baselineCheck": "Safety check : compare vs greedy 60/40 baseline"
+    },
+    "why": {
+      "title": "Why this allocation?",
+      "subtitle": "Top features that drove the XGBoost slippage prediction.",
+      "feature": {
+        "size": "Order size relative to book depth",
+        "depth": "Top-5 book depth",
+        "spread": "Quoted bid/ask spread",
+        "hour": "Hour of day (Lagos)",
+        "dow": "Day of week",
+        "monthEnd": "Month-end approach (CBN cycle)",
+        "vol": "NGN/USDT 24h volatility",
+        "sourceYellowCard": "Source : Yellow Card",
+        "sourceOtc1": "Source : OTC Desk #1",
+        "sourceOtc2": "Source : OTC Desk #2"
+      }
     },
     "breakdown": {
       "youPay": "You pay",
@@ -216,6 +236,7 @@
       "vsSwift": "vs SWIFT estimated at {swiftCost}",
       "totalCost": "Yuán total cost",
       "eta": "T+0 settlement · ~{seconds}s",
+      "engineXgbCvxpy": "XGBoost + CVXPY",
       "engineCvxpy": "CVXPY",
       "engineGreedy": "Greedy fallback",
       "breakdownToggle": "Cost breakdown",
@@ -229,6 +250,7 @@
       "subtitle": "3 NGN→USDT sources, convex optimizer under constraints",
       "totalCost": "Total cost",
       "vsBaseline": "vs 60/40 baseline",
+      "engineXgbCvxpy": "XGBoost + CVXPY",
       "engineCvxpy": "CVXPY ECOS",
       "engineGreedy": "Greedy (fallback)"
     }

@@ -200,13 +200,33 @@
     "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
     "escrowSectionHint": "↓ 下一步:在下方部署链上托管",
     "stream": {
-      "title": "智能订单路由 · AI 智能体执行中",
-      "subtitle": "并行查询 3 个 NGN→USDT 流动性来源 + 凸优化求解",
+      "title": "智能订单路由 ML · AI 智能体执行中",
+      "subtitle": "XGBoost 预测各来源滑点 · CVXPY 求解最优分配",
       "yellowCard": "拉取 Yellow Card 订单簿",
       "otc1": "询价 OTC Desk #1(Binance OTC)",
       "otc2": "询价 OTC Desk #2(Hashkey)",
       "psp": "USDT→CNY 出金 PSP 报价(Onafriq)",
-      "solve": "求解凸优化问题(CVXPY ECOS)"
+      "loadModel": "加载 XGBoost 模型(20 万个 P2P 快照训练)",
+      "predictSlippage": "预测各来源滑点(时间、深度、NGN 波动率)",
+      "buildProblem": "构建凸优化问题(目标 + 约束)",
+      "solve": "CVXPY CLARABEL 求解 — 全局最优分配",
+      "baselineCheck": "保护机制:对比 greedy 60/40 基线"
+    },
+    "why": {
+      "title": "为什么是这种分配?",
+      "subtitle": "对 XGBoost 滑点预测影响最大的特征。",
+      "feature": {
+        "size": "订单规模相对订单簿深度",
+        "depth": "订单簿深度(前 5 档)",
+        "spread": "报价买卖价差",
+        "hour": "当日时段(拉各斯)",
+        "dow": "星期几",
+        "monthEnd": "月末临近(CBN 周期)",
+        "vol": "NGN/USDT 24 小时波动率",
+        "sourceYellowCard": "来源:Yellow Card",
+        "sourceOtc1": "来源:OTC Desk #1",
+        "sourceOtc2": "来源:OTC Desk #2"
+      }
     },
     "breakdown": {
       "youPay": "您支付",
@@ -216,6 +236,7 @@
       "vsSwift": "对比 SWIFT 估算 {swiftCost}",
       "totalCost": "Yuán 总成本",
       "eta": "T+0 结算 · 约 {seconds} 秒",
+      "engineXgbCvxpy": "XGBoost + CVXPY",
       "engineCvxpy": "CVXPY",
       "engineGreedy": "贪心回退",
       "breakdownToggle": "成本明细",
@@ -229,6 +250,7 @@
       "subtitle": "3 个 NGN→USDT 来源,凸优化器约束求解",
       "totalCost": "总成本",
       "vsBaseline": "对比 60/40 基线",
+      "engineXgbCvxpy": "XGBoost + CVXPY",
       "engineCvxpy": "CVXPY ECOS",
       "engineGreedy": "贪心(回退)"
     }

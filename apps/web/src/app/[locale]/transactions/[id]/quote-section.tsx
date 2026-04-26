@@ -113,6 +113,8 @@ export function QuoteSection({
             totalCostBps={result.sor.total_cost_bps}
             vsBaselineSavingsBps={result.sor.vs_baseline_savings_bps}
             engine={result.engine}
+            modelVersion={result.sor.model_version ?? null}
+            topFeatures={result.sor.top_features}
           />
           <p className="text-xs text-ink-500 text-center">{t("escrowSectionHint")}</p>
         </div>
@@ -130,11 +132,21 @@ export function QuoteSection({
 
 function QuotingStream() {
   const t = useTranslations("quote.stream");
-  const steps = [t("yellowCard"), t("otc1"), t("otc2"), t("psp"), t("solve")] as const;
+  const steps = [
+    t("yellowCard"),
+    t("otc1"),
+    t("otc2"),
+    t("psp"),
+    t("loadModel"),
+    t("predictSlippage"),
+    t("buildProblem"),
+    t("solve"),
+    t("baselineCheck"),
+  ] as const;
   return (
     <AgentActionStream
       steps={steps}
-      pacing={[600, 700, 700, 700, 800]}
+      pacing={[700, 800, 800, 700, 1100, 1300, 900, 1200, 800]}
       title={t("title")}
       subtitle={t("subtitle")}
     />

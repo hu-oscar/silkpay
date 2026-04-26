@@ -12,7 +12,7 @@ import { ArrowRight, ChevronDown, Sparkles, Timer } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
-import type { QuoteBreakdown } from "@/lib/quote/schemas";
+import type { QuoteBreakdown, SolverEngine } from "@/lib/quote/schemas";
 import { cn } from "@/lib/utils";
 
 export function QuoteBreakdownCard({
@@ -21,7 +21,7 @@ export function QuoteBreakdownCard({
   latencyMs,
 }: {
   breakdown: QuoteBreakdown;
-  engine: "cvxpy" | "greedy_fallback";
+  engine: SolverEngine;
   latencyMs: number;
 }) {
   const t = useTranslations("quote.breakdown");
@@ -93,8 +93,12 @@ export function QuoteBreakdownCard({
         </span>
         <span className="inline-flex items-center gap-1">
           <Sparkles className="h-3.5 w-3.5" />
-          {engine === "cvxpy" ? t("engineCvxpy") : t("engineGreedy")} ·{" "}
-          {(latencyMs / 1000).toFixed(1)}s
+          {engine === "xgboost+cvxpy"
+            ? t("engineXgbCvxpy")
+            : engine === "cvxpy"
+              ? t("engineCvxpy")
+              : t("engineGreedy")}{" "}
+          · {(latencyMs / 1000).toFixed(1)}s
         </span>
       </div>
 

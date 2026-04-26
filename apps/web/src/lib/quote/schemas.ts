@@ -35,16 +35,26 @@ export const SorAllocationSchema = z.object({
 });
 export type SorAllocation = z.infer<typeof SorAllocationSchema>;
 
+export const FeatureContributionSchema = z.object({
+  feature: z.string(),
+  importance: z.number(),
+  label: z.string(),
+});
+export type FeatureContribution = z.infer<typeof FeatureContributionSchema>;
+
 export const SorOptimizeResponseSchema = z.object({
   allocation: z.array(SorAllocationSchema),
   total_cost_bps: z.number(),
   vs_baseline_savings_bps: z.number(),
   solver_status: z.string(),
+  engine: z.string().optional(),
+  model_version: z.string().nullable().optional(),
+  top_features: z.array(FeatureContributionSchema).optional(),
 });
 export type SorOptimizeResponse = z.infer<typeof SorOptimizeResponseSchema>;
 
 /** Engine that produced the allocation — surfaced in the UI for transparency. */
-export type SolverEngine = "cvxpy" | "greedy_fallback";
+export type SolverEngine = "xgboost+cvxpy" | "cvxpy" | "greedy_fallback";
 
 export const QuoteBreakdownSchema = z.object({
   ngn_paid: z.number().positive(),
