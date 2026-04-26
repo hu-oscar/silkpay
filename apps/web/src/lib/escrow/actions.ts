@@ -552,9 +552,51 @@ export async function syncTransactionStatus(transactionId: string): Promise<TxSt
     .eq("id", transactionId)
     .maybeSingle();
   if (error || !tx?.escrow_address) return null;
+  const escrowAddr = tx.escrow_address as Address;
 
-  const state = await readEscrowState(tx.escrow_address);
+  let state = await readEscrowState(escrowAddr);
   if (!state) return tx.status as TxStatus;
+
+  // Auto-claim any tranche stuck at Attested (status=1). This recovers the
+  // legacy state where the old attestMilestone didn't chain claim — once the
+  // user refreshes the page, every attested tranche gets pulled to the seller.
+  const attestedIndices = state.tranches
+    .map((t, i) => (t.status === 1 ? (i as 0 | 1 | 2) : null))
+    .filter((i): i is 0 | 1 | 2 => i !== null);
+
+  if (attestedIndices.length > 0) {
+    const wallet = walletClient();
+    const account = walletAccount();
+    const pub = publicClient();
+    for (const idx of attestedIndices) {
+      try {
+        const claimHash = await wallet.writeContract({
+          account,
+          chain: wallet.chain,
+          address: escrowAddr,
+          abi: TRADE_ESCROW_ABI,
+          functionName: "claim",
+          args: [idx],
+        });
+        await pub.waitForTransactionReceipt({ hash: claimHash });
+        await supabase.from("audit_events").insert({
+          id: crypto.randomUUID(),
+          transaction_id: transactionId,
+          actor_id: null,
+          actor_type: "seller",
+          event_type: "tranche_claimed",
+          payload: { tranche_index: idx, recovered: true },
+          on_chain_tx_hash: claimHash,
+          created_at: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.error(`auto-claim of tranche ${idx} failed:`, err);
+      }
+    }
+    // Re-read after claims so the status mapping below sees the updated state.
+    state = await readEscrowState(escrowAddr);
+    if (!state) return tx.status as TxStatus;
+  }
 
   const releasedCount = state.tranches.filter((t) => t.status === 2).length;
   const desired: TxStatus = !state.funded
