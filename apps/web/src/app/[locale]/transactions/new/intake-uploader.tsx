@@ -6,13 +6,13 @@ import {
   FileText,
   Loader2,
   ShieldCheck,
-  Sparkles,
   Upload,
   XCircle,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useRef, useState, useTransition, type DragEvent } from "react";
 
+import { AgentActionStream } from "@/components/agent-action-stream";
 import { useRouter } from "@/i18n/navigation";
 import { parseProforma, type ParseProformaResult } from "@/lib/intake/actions";
 import type { ProformaInvoice } from "@/lib/intake/schemas";
@@ -106,7 +106,7 @@ export function IntakeUploader() {
         </div>
       </div>
 
-      {isPending && <ParsingProgress />}
+      {isPending && <ParsingStream />}
 
       {result?.ok && (
         <ParsedResult
@@ -125,18 +125,13 @@ export function IntakeUploader() {
   );
 }
 
-function ParsingProgress() {
-  const t = useTranslations("intake");
+function ParsingStream() {
+  const t = useTranslations("intake.stream");
+  const steps = [t("read"), t("parties"), t("hsc"), t("amounts"), t("validate")] as const;
+  // Total ~7s for 5 steps — matches typical Claude Vision latency.
+  const pacing = [1200, 1500, 1500, 1500, 1500] as const;
   return (
-    <div className="rounded-xl border border-brand-200 bg-brand-50 p-4">
-      <div className="flex items-center gap-3">
-        <Sparkles className="h-5 w-5 text-brand-700 animate-pulse" />
-        <div>
-          <p className="text-sm font-semibold text-brand-900">{t("uploader.parsing")}</p>
-          <p className="text-xs text-brand-700/80">{t("uploader.parsingHint")}</p>
-        </div>
-      </div>
-    </div>
+    <AgentActionStream steps={steps} pacing={pacing} title={t("title")} subtitle={t("subtitle")} />
   );
 }
 

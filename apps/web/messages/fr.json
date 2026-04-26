@@ -37,7 +37,7 @@
       "items": [
         {
           "title": "AI-first",
-          "body": "Upload ton proforma — Claude Vision extrait HSC codes, parties, Incoterms en quelques secondes."
+          "body": "Upload le devis du fournisseur — Claude Vision extrait codes HSC, parties, Incoterms en quelques secondes."
         },
         {
           "title": "Escrow programmable",
@@ -139,19 +139,28 @@
     }
   },
   "intake": {
-    "step": "Étape 1 / 4 · Document intake",
-    "title": "Upload ton proforma",
-    "subtitle": "Claude Vision extrait HSC codes, parties, montants, Incoterms en quelques secondes.",
+    "step": "Étape 1 / 4 · Lecture du devis",
+    "title": "Upload le devis du fournisseur",
+    "subtitle": "Claude Vision extrait les codes HSC, les parties, les montants et les Incoterms en quelques secondes.",
     "noKeyTitle": "Mode démo (pas de clé Anthropic)",
     "noKeyBody": "Ajoute ANTHROPIC_API_KEY dans apps/web/.env.local pour lancer un vrai parse Claude Vision. Sans clé, l'upload s'arrête avec une erreur explicite.",
     "uploader": {
-      "drop": "Glisse ton proforma ici (PDF, JPG, PNG)",
+      "drop": "Glisse le devis du fournisseur ici (PDF, JPG, PNG)",
       "formats": "PDF · JPEG · PNG · WebP — 8 MB max",
-      "parsing": "Claude Vision extrait les champs…",
+      "parsing": "Extraction des champs en cours…",
       "parsingHint": "Cela prend généralement 5-10 secondes."
     },
+    "stream": {
+      "title": "Claude Vision · Agent IA en action",
+      "subtitle": "Lecture du devis et structuration des champs",
+      "read": "Lecture du document",
+      "parties": "Identification du vendeur et de l'acheteur",
+      "hsc": "Extraction des codes HSC et lignes d'articles",
+      "amounts": "Lecture des montants, devise et Incoterms",
+      "validate": "Validation et structuration"
+    },
     "result": {
-      "title": "Document parsé avec succès",
+      "title": "Devis parsé avec succès",
       "manualReview": "Confiance < 85% — vérifie manuellement les champs avant de continuer.",
       "invoiceNumber": "Numéro de facture",
       "issuedDate": "Date d'émission",
@@ -165,30 +174,40 @@
       "paymentTerms": "Conditions de paiement",
       "lineItems": "Lignes ({count})",
       "uploadAnother": "Uploader un autre document",
-      "continueCta": "Continuer vers le quote engine"
+      "continueCta": "Continuer vers le routage du paiement"
     }
   },
   "txDetail": {
     "back": "Retour au dashboard",
     "unknownCounterparty": "Contrepartie inconnue",
     "createdAt": "Créé le {date}",
-    "proformaTitle": "Proforma extraite",
+    "proformaTitle": "Devis du fournisseur",
     "invoiceNumber": "N° facture",
     "totalAmount": "Montant",
     "incoterms": "Incoterms",
     "issuedDate": "Date d'émission"
   },
   "quote": {
-    "inputTitle": "Quote engine",
-    "fromProforma": "Proforma : {amount}",
+    "inputTitle": "Optimal payment route",
+    "fromProforma": "Devis : {amount}",
     "amountLabel": "Combien le fournisseur doit recevoir ? (USD)",
     "amountHint": "Montant à délivrer dans l'escrow USDT — Yuán calcule combien tu paies en NGN.",
-    "getQuote": "Lancer le quote",
+    "autoQuoteHint": "Routage automatique vers le coût total minimum à partir du montant du devis. Aucune saisie nécessaire.",
+    "getQuote": "Lancer le routage",
     "fetching": "Récupération en cours…",
-    "refresh": "Rafraîchir le quote",
+    "refresh": "Rafraîchir le routage",
     "orchestrating": "3 sources interrogées en parallèle + SOR convexe",
     "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
     "escrowSectionHint": "↓ Étape suivante : déploie l'escrow on-chain ci-dessous",
+    "stream": {
+      "title": "Smart Order Router · Agent IA en action",
+      "subtitle": "3 sources de liquidité NGN→USDT interrogées en parallèle + solveur convexe",
+      "yellowCard": "Récupération du carnet d'ordres Yellow Card",
+      "otc1": "Cotation OTC Desk #1 (Binance OTC)",
+      "otc2": "Cotation OTC Desk #2 (Hashkey)",
+      "psp": "Tarif off-ramp PSP USDT→CNY (Onafriq)",
+      "solve": "Résolution du programme convexe (CVXPY ECOS)"
+    },
     "breakdown": {
       "youPay": "Tu paies",
       "usdtHeld": "USDT en escrow",
@@ -224,10 +243,20 @@
     "funding": "Déploiement on-chain en cours…",
     "fundingSteps": "1/3 factory.create → 2/3 mUSDT.approve → 3/3 escrow.fund",
     "fundedSuccess": "Escrow déployé et fundé sur Sepolia",
+    "stream": {
+      "title": "Yuán · Agent IA déploie l'escrow",
+      "subtitle": "3 transactions on-chain enchaînées sur Sepolia testnet",
+      "compile": "Compilation du contrat TradeEscrow (Solidity 0.8.24)",
+      "deploy": "Déploiement via la factory (factory.create)",
+      "mint": "Mint des mUSDT de test pour l'acheteur",
+      "approve": "Approbation du contrat à puller les fonds (mUSDT.approve)",
+      "fund": "Funding de l'escrow on-chain (escrow.fund)",
+      "persist": "Persistance + revalidation du dashboard"
+    },
     "viewFundingTx": "Voir la tx fund sur Etherscan",
     "loading": "Lecture de l'état on-chain…",
     "readFailed": "Impossible de lire l'état du contrat. Vérifie l'adresse + ton RPC Sepolia.",
-    "waitForQuote": "Lance le quote engine au-dessus avant de fund l'escrow.",
+    "waitForQuote": "Lance le routage du paiement au-dessus avant de fund l'escrow.",
     "tranche": "Tranche {n} ({pct} %)",
     "condition": {
       "bl_signed": "Bill of Lading signé",
@@ -257,7 +286,7 @@
       "settled": "Réglé"
     },
     "phaseHint": {
-      "drafted": "Proforma extraite par Claude Vision",
+      "drafted": "Devis extrait par Claude Vision",
       "quoted": "Routing optimisé sur 3 sources NGN→USDT",
       "funded": "USDT verrouillés on-chain · 3 tranches",
       "in_transit": "Bill of Lading · inspection CCIC · livraison",
@@ -274,7 +303,7 @@
     "empty": "Aucun événement enregistré pour le moment.",
     "viewOnEtherscan": "Voir la tx sur Etherscan",
     "event": {
-      "proforma_parsed": "Proforma parsée par Claude Vision",
+      "proforma_parsed": "Devis parsé par Claude Vision",
       "quote_calculated": "Quote calculé · SOR 3 sources",
       "escrow_funded": "Escrow déployé + fundé sur Sepolia",
       "milestone_attested": "Jalon attesté par l'arbiter",

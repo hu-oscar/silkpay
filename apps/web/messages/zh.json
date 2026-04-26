@@ -37,7 +37,7 @@
       "items": [
         {
           "title": "AI 优先",
-          "body": "上传形式发票 — Claude Vision 在几秒内提取 HSC 编码、当事方、贸易术语。"
+          "body": "上传供应商报价单 — Claude Vision 在几秒内提取 HSC 编码、当事方、贸易术语。"
         },
         {
           "title": "可编程托管",
@@ -139,19 +139,28 @@
     }
   },
   "intake": {
-    "step": "步骤 1 / 4 · 文档解析",
-    "title": "上传形式发票",
+    "step": "步骤 1 / 4 · 解读供应商报价单",
+    "title": "上传供应商报价单",
     "subtitle": "Claude Vision 在几秒内提取 HSC 编码、当事方、金额和贸易术语。",
     "noKeyTitle": "演示模式(未配置 Anthropic 密钥)",
     "noKeyBody": "请在 apps/web/.env.local 中添加 ANTHROPIC_API_KEY,以运行真实的 Claude Vision 解析。",
     "uploader": {
-      "drop": "拖入形式发票文件(PDF / JPG / PNG)",
+      "drop": "拖入供应商报价单(PDF / JPG / PNG)",
       "formats": "PDF · JPEG · PNG · WebP — 最大 8 MB",
-      "parsing": "Claude Vision 正在提取字段…",
+      "parsing": "正在提取字段…",
       "parsingHint": "通常需要 5-10 秒。"
     },
+    "stream": {
+      "title": "Claude Vision · AI 智能体执行中",
+      "subtitle": "解读报价单并结构化字段",
+      "read": "读取文档",
+      "parties": "识别卖方与买方",
+      "hsc": "提取 HSC 编码与商品明细",
+      "amounts": "读取金额、币种与贸易术语",
+      "validate": "校验与结构化"
+    },
     "result": {
-      "title": "文档解析成功",
+      "title": "报价单解析成功",
       "manualReview": "置信度 < 85% — 请手动验证字段后再继续。",
       "invoiceNumber": "发票号",
       "issuedDate": "开具日期",
@@ -165,30 +174,40 @@
       "paymentTerms": "付款条件",
       "lineItems": "明细项({count})",
       "uploadAnother": "上传另一份",
-      "continueCta": "继续报价"
+      "continueCta": "继续支付路径"
     }
   },
   "txDetail": {
     "back": "返回仪表板",
     "unknownCounterparty": "未知对方",
     "createdAt": "创建于 {date}",
-    "proformaTitle": "已解析的形式发票",
+    "proformaTitle": "供应商报价单",
     "invoiceNumber": "发票号",
     "totalAmount": "金额",
     "incoterms": "贸易术语",
     "issuedDate": "开具日期"
   },
   "quote": {
-    "inputTitle": "报价引擎",
-    "fromProforma": "形式发票:{amount}",
+    "inputTitle": "最优支付路径",
+    "fromProforma": "报价单:{amount}",
     "amountLabel": "供应商应收金额?(美元)",
     "amountHint": "USDT 托管交付金额 — Yuán 自动计算您需支付的奈拉金额。",
-    "getQuote": "获取报价",
+    "autoQuoteHint": "根据报价单金额自动路由至最低总成本,无需输入。",
+    "getQuote": "运行路径",
     "fetching": "获取中…",
-    "refresh": "刷新报价",
+    "refresh": "刷新路径",
     "orchestrating": "并行查询 3 个来源 + 凸优化 SOR",
     "orchestratingHint": "Yellow Card · OTC #1 · OTC #2 · PSP USDT→CNY",
     "escrowSectionHint": "↓ 下一步:在下方部署链上托管",
+    "stream": {
+      "title": "智能订单路由 · AI 智能体执行中",
+      "subtitle": "并行查询 3 个 NGN→USDT 流动性来源 + 凸优化求解",
+      "yellowCard": "拉取 Yellow Card 订单簿",
+      "otc1": "询价 OTC Desk #1(Binance OTC)",
+      "otc2": "询价 OTC Desk #2(Hashkey)",
+      "psp": "USDT→CNY 出金 PSP 报价(Onafriq)",
+      "solve": "求解凸优化问题(CVXPY ECOS)"
+    },
     "breakdown": {
       "youPay": "您支付",
       "usdtHeld": "托管中 USDT",
@@ -224,10 +243,20 @@
     "funding": "链上部署中…",
     "fundingSteps": "1/3 factory.create → 2/3 mUSDT.approve → 3/3 escrow.fund",
     "fundedSuccess": "托管合约已在 Sepolia 部署并充值",
+    "stream": {
+      "title": "Yuán · AI 智能体部署托管合约",
+      "subtitle": "在 Sepolia 测试网上链上 3 笔交易顺序执行",
+      "compile": "编译 TradeEscrow 合约(Solidity 0.8.24)",
+      "deploy": "通过 factory 部署(factory.create)",
+      "mint": "为买方铸造测试 mUSDT",
+      "approve": "授权合约提取资金(mUSDT.approve)",
+      "fund": "向托管合约充值(escrow.fund)",
+      "persist": "持久化 + 仪表板刷新"
+    },
     "viewFundingTx": "在 Etherscan 查看充值交易",
     "loading": "读取链上状态中…",
     "readFailed": "无法读取合约状态。请检查地址和 Sepolia RPC。",
-    "waitForQuote": "请先在上方运行报价引擎,再充值托管。",
+    "waitForQuote": "请先在上方运行支付路径,再充值托管。",
     "tranche": "阶段 {n}({pct}%)",
     "condition": {
       "bl_signed": "提单已签署",
@@ -257,7 +286,7 @@
       "settled": "已结算"
     },
     "phaseHint": {
-      "drafted": "Claude Vision 提取形式发票",
+      "drafted": "Claude Vision 提取报价单",
       "quoted": "在 3 个 NGN→USDT 来源间路由",
       "funded": "USDT 已链上锁定 · 3 阶段",
       "in_transit": "提单 · CCIC 检验 · 交付",
@@ -274,7 +303,7 @@
     "empty": "暂无事件记录。",
     "viewOnEtherscan": "在 Etherscan 查看交易",
     "event": {
-      "proforma_parsed": "Claude Vision 解析形式发票",
+      "proforma_parsed": "Claude Vision 解析供应商报价单",
       "quote_calculated": "报价计算 · 3 源 SOR",
       "escrow_funded": "Sepolia 上托管已部署并充值",
       "milestone_attested": "仲裁方已认证里程碑",

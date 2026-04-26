@@ -12,6 +12,7 @@ import { ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
+import { AgentActionStream } from "@/components/agent-action-stream";
 import { EscrowStatusCard } from "@/components/escrow-status-card";
 import { fundEscrow, type FundEscrowResult } from "@/lib/escrow/actions";
 import { cn } from "@/lib/utils";
@@ -78,7 +79,7 @@ export function EscrowSection({
           )}
         </button>
 
-        {isPending && <p className="text-xs text-ink-500 text-center">{t("fundingSteps")}</p>}
+        {isPending && <DeployStream />}
 
         {result && !result.ok && (
           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-900">
@@ -108,5 +109,27 @@ export function EscrowSection({
       )}
       <EscrowStatusCard transactionId={transactionId} escrowAddress={liveAddress} />
     </div>
+  );
+}
+
+function DeployStream() {
+  const t = useTranslations("escrow.stream");
+  const steps = [
+    t("compile"),
+    t("deploy"),
+    t("mint"),
+    t("approve"),
+    t("fund"),
+    t("persist"),
+  ] as const;
+  // Real on-chain wait is ~30-50 s on Sepolia (3 sequential txs at ~12 s each).
+  return (
+    <AgentActionStream
+      steps={steps}
+      pacing={[1500, 12000, 8000, 8000, 12000, 1500]}
+      title={t("title")}
+      subtitle={t("subtitle")}
+      tone="emerald"
+    />
   );
 }
