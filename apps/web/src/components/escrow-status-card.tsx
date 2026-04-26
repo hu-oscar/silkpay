@@ -39,9 +39,11 @@ const TRANCHE_LABELS = ["bl_signed", "inspection_certified", "delivery_acknowled
 const TRANCHE_PERCENTS = [30, 50, 20] as const;
 
 export function EscrowStatusCard({
+  transactionId,
   escrowAddress,
   decimals = 6,
 }: {
+  transactionId: string;
   escrowAddress: string;
   decimals?: number;
 }) {
@@ -74,11 +76,12 @@ export function EscrowStatusCard({
     setPendingIdx(idx);
     setError(null);
     startTransition(async () => {
-      const r = await attestMilestone(escrowAddress, idx);
-      // Server Action signatures need transactionId, not address. We pass address
-      // upstream — let the parent component wrap if needed. (See parent.)
-      void r;
+      const r = await attestMilestone(transactionId, idx);
       setPendingIdx(null);
+      if (!r.ok) {
+        setError(`${r.code}: ${r.message}`);
+        return;
+      }
       await refresh();
     });
   }

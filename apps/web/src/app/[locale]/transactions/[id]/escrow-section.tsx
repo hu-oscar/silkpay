@@ -106,7 +106,7 @@ export function EscrowSection({
           </a>
         </div>
       )}
-      <EscrowStatusCard escrowAddress={liveAddress} />
+      <EscrowStatusCard transactionId={transactionId} escrowAddress={liveAddress} />
     </div>
   );
 }
