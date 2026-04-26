@@ -24,10 +24,8 @@ import { env } from "@/lib/env";
 import { supabaseServer } from "@/lib/supabase/server";
 
 import {
-  PspQuoteSchema,
   QuoteBreakdownSchema,
   SorOptimizeResponseSchema,
-  SourceQuoteSchema,
   type PspQuote,
   type QuoteBreakdown,
   type SolverEngine,
@@ -35,6 +33,7 @@ import {
   type SourceQuote,
 } from "./schemas";
 import { solveGreedy } from "./solver-fallback";
+import { generateNgnUsdtQuote, generatePspUsdtCnyQuote } from "./sources";
 
 const NGN_USDT_SOURCES = ["yellow_card", "otc_desk_1", "otc_desk_2"] as const;
 const PLATFORM_FEE_BPS = 50;
@@ -91,51 +90,21 @@ export async function getQuote(input: {
     return { ok: false, code: "NOT_FOUND", message: "Transaction not found" };
   }
 
-  // 1. Parallel source fetch via Next.js route handlers (in-process — fast).
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-  const fetchSource = async (id: string) => {
-    const res = await fetch(`${baseUrl}/api/sources/${id}/quote`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`Source ${id} returned ${res.status}`);
-    return res.json();
-  };
-
+  // 1. Source quotes — call generators in-process. Avoids the HTTP roundtrip
+  //    (and deployment-protection 401 on Vercel preview/production deploy URLs
+  //    when reaching the per-deploy URL via VERCEL_URL).
+  //    The Route Handlers under /api/sources/[source]/quote still exist for
+  //    external callers ; this Server Action just bypasses them.
   let sources: SourceQuote[];
   let psp: PspQuote;
   try {
-    const settled = await Promise.allSettled([
-      ...NGN_USDT_SOURCES.map((id) => fetchSource(id)),
-      fetchSource("psp"),
-    ]);
-    const ngnUsdt = settled.slice(0, 3);
-    const pspRes = settled[3];
-
-    sources = ngnUsdt
-      .filter((s): s is PromiseFulfilledResult<unknown> => s.status === "fulfilled")
-      .map((s) => SourceQuoteSchema.parse(s.value));
-    if (sources.length < 2) {
-      return {
-        ok: false,
-        code: "INSUFFICIENT_LIQUIDITY",
-        message: `Only ${sources.length} of 3 NGN→USDT sources responded. Try again in a moment.`,
-      };
-    }
-    if (pspRes.status !== "fulfilled") {
-      return {
-        ok: false,
-        code: "INSUFFICIENT_LIQUIDITY",
-        message: "USDT→CNY PSP unreachable — cannot complete the leg.",
-      };
-    }
-    psp = PspQuoteSchema.parse(pspRes.value);
+    sources = NGN_USDT_SOURCES.map((id) => generateNgnUsdtQuote(id));
+    psp = generatePspUsdtCnyQuote();
   } catch (err) {
     return {
       ok: false,
       code: "SOR_FAILED",
-      message: err instanceof Error ? err.message : "source fetch failed",
+      message: err instanceof Error ? err.message : "source generator failed",
     };
   }
 
