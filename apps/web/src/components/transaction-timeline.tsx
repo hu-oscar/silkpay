@@ -36,6 +36,9 @@ function phaseStateForIndex(
   status: TxStatus,
 ): "done" | "current" | "upcoming" | "halted" {
   if (TERMINAL_NEGATIVE.includes(status)) return "halted";
+  // "settled" is the terminal-positive state — every phase is done, no spinner
+  // hanging on the last one.
+  if (status === "settled") return "done";
   const currentIdx = PHASES.findIndex((p) => p.statuses.includes(status));
   if (currentIdx < 0) return "upcoming";
   if (index < currentIdx) return "done";

@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yuán — Pay China like it's next door",
+  title: "Silkpay — Pay China like it's next door",
   description:
     "B2B cross-border payments for the Africa–China trade corridor. T+0 settlement, programmable escrow, transparent FX.",
 };
@@ -57,8 +57,7 @@ export default async function LocaleLayout({
             <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
               <div className="flex items-center gap-6">
                 <Link href="/" className="flex items-baseline gap-2 text-ink-900 hover:opacity-80">
-                  <span className="text-xl font-bold tracking-tight">Yuán</span>
-                  <span className="text-xs text-ink-500 hidden sm:inline">元</span>
+                  <span className="text-xl font-bold tracking-tight">Silkpay</span>
                 </Link>
                 <nav className="hidden items-center gap-4 sm:flex">
                   <Link
@@ -83,7 +82,7 @@ export default async function LocaleLayout({
           </header>
           <main className="flex-1">{children}</main>
           <footer className="border-t border-ink-200 bg-white py-6 text-center text-xs text-ink-500">
-            © 2026 Yuán · Hackathon MVP · {user.full_name}
+            © 2026 Silkpay · Hackathon MVP · {user.full_name}
           </footer>
         </NextIntlClientProvider>
       </body>

@@ -1,6 +1,6 @@
 {
   "brand": {
-    "name": "Yuán",
+    "name": "Silkpay",
     "tagline": "Pay China like it's next door."
   },
   "nav": {
@@ -26,14 +26,14 @@
       "amountLabel": "Order amount (USD)",
       "amountPlaceholder": "30,000",
       "swiftLabel": "Estimated SWIFT cost",
-      "yuanLabel": "Cost with Yuán",
+      "yuanLabel": "Cost with Silkpay",
       "savingsLabel": "You save",
       "swiftRate": "≈ 7.5% friction",
       "yuanRate": "≈ 1.8% friction (FX + platform + on/off-ramp)",
       "perTransaction": "per transaction"
     },
     "valueProps": {
-      "title": "Why Yuán",
+      "title": "Why Silkpay",
       "items": [
         {
           "title": "AI-first",
@@ -191,7 +191,7 @@
     "inputTitle": "Optimal payment route",
     "fromProforma": "Quote: {amount}",
     "amountLabel": "How much should the supplier receive? (USD)",
-    "amountHint": "Amount to deliver into USDT escrow — Yuán computes how much NGN you pay.",
+    "amountHint": "Amount to deliver into USDT escrow — Silkpay computes how much NGN you pay.",
     "autoQuoteHint": "Routing automatically toward minimum total cost from the quoted amount. No input required.",
     "getQuote": "Run routing",
     "fetching": "Fetching…",
@@ -234,7 +234,7 @@
       "supplierGets": "Supplier receives",
       "savings": "You save",
       "vsSwift": "vs SWIFT estimated at {swiftCost}",
-      "totalCost": "Yuán total cost",
+      "totalCost": "Silkpay total cost",
       "eta": "T+0 settlement · ~{seconds}s",
       "engineXgbCvxpy": "XGBoost + CVXPY",
       "engineCvxpy": "CVXPY",
@@ -260,13 +260,13 @@
     "subtitleFunded": "✓ {amount} held in escrow — released per tranche after attestation",
     "subtitleNotFunded": "Contract deployed, awaiting funding",
     "fundTitle": "Deploy + fund the escrow",
-    "fundDescription": "Yuán deploys a fresh TradeEscrow contract on Sepolia testnet, mints mUSDT, and funds the contract with the quoted USDT amount. 3 on-chain transactions chained. (V1 prod: BNB Chain mainnet + USDT BEP-20.)",
+    "fundDescription": "Silkpay deploys a fresh TradeEscrow contract on Sepolia testnet, mints mUSDT, and funds the contract with the quoted USDT amount. 3 on-chain transactions chained. (V1 prod: BNB Chain mainnet + USDT BEP-20.)",
     "fundCta": "Deploy + fund the escrow",
     "funding": "On-chain deployment in progress…",
     "fundingSteps": "1/3 factory.create → 2/3 mUSDT.approve → 3/3 escrow.fund",
     "fundedSuccess": "Escrow deployed and funded on Sepolia",
     "stream": {
-      "title": "Yuán · AI agent deploying the escrow",
+      "title": "Silkpay · AI agent deploying the escrow",
       "subtitle": "3 on-chain transactions chained on Sepolia testnet",
       "compile": "Compiling TradeEscrow contract (Solidity 0.8.24)",
       "deploy": "Deploying via the factory (factory.create)",
