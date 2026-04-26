@@ -56,24 +56,34 @@ export type GetQuoteResult =
       message: string;
     };
 
+/**
+ * The supplier issues a proforma in USD/USDT — they want exactly that amount
+ * delivered. The importer's question is "what NGN must I pay so the escrow
+ * holds exactly `targetUsdt`?". So `targetUsdt` is the input ; `ngn_paid` is
+ * the output. We solve this by :
+ *   1. Estimating NGN ≈ targetUsdt × avg sticker price × (1 + 1.5% buffer)
+ *   2. Running SOR on that NGN, computing actual USDT delivered
+ *   3. If off by > 0.5 %, scaling NGN by `target / actual` and re-solving once
+ * Two iterations are enough for sub-bps convergence on this problem shape.
+ */
 export async function getQuote(input: {
   transactionId: string;
-  amountNgn: number;
+  targetUsdt: number;
 }): Promise<GetQuoteResult> {
   const startedAt = Date.now();
 
-  if (input.amountNgn < 100_000) {
+  if (input.targetUsdt < 100) {
     return {
       ok: false,
       code: "VALIDATION",
-      message: "Minimum quote amount is 100 000 NGN.",
+      message: "Minimum quote amount is 100 USDT.",
     };
   }
-  if (input.amountNgn > 500_000_000) {
+  if (input.targetUsdt > 300_000) {
     return {
       ok: false,
       code: "VALIDATION",
-      message: "Maximum quote amount is 500 000 000 NGN (above demo cap).",
+      message: "Maximum quote amount is 300 000 USDT (above demo cap).",
     };
   }
 
@@ -108,29 +118,43 @@ export async function getQuote(input: {
     };
   }
 
-  // 2. Solve. Python CVXPY first, TS greedy fallback.
-  const { sor, engine } = await runSolver(input.amountNgn, sources);
-
-  // 3. Compose breakdown.
-  // Total cost in NGN = explicit FX cost from the solver (already in sor.total_cost_bps)
-  //                    + platform fee (50 bps on amount).
-  // Then convert to USDT using the volume-weighted price across allocations.
-  const fxCostNgn = (sor.total_cost_bps / 10_000) * input.amountNgn;
-  const platformFeeNgn = (PLATFORM_FEE_BPS / 10_000) * input.amountNgn;
-  const ngnAfterFees = input.amountNgn - fxCostNgn - platformFeeNgn;
-
-  // Volume-weighted USDT received using each source's sticker price.
+  // 2. Solve backwards. Estimate NGN, run SOR, refine once if needed.
   const sourceById = new Map(sources.map((s) => [s.source_id, s]));
-  let usdtReceivedRaw = 0;
-  for (const a of sor.allocation) {
-    const src = sourceById.get(a.source_id);
-    if (!src) continue;
-    usdtReceivedRaw += a.ngn_amount / src.price_ngn_per_usdt;
+  const avgStickerPrice =
+    sources.reduce((sum, s) => sum + s.price_ngn_per_usdt, 0) / sources.length;
+  // Buffer = avg spread + slippage + platform fee headroom. 1.5% is conservative
+  // for the targets we deal with (≪ 60 % depth caps).
+  let ngnPaid = input.targetUsdt * avgStickerPrice * 1.015;
+
+  let sor: SorOptimizeResponse;
+  let engine: SolverEngine;
+  let solved = await runSolver(ngnPaid, sources);
+  sor = solved.sor;
+  engine = solved.engine;
+
+  // Refine: actual USDT after fees vs target. If off by > 0.5 %, scale once.
+  const computeUsdt = (ngn: number, s: SorOptimizeResponse) => {
+    const fxNgn = (s.total_cost_bps / 10_000) * ngn;
+    const feeNgn = (PLATFORM_FEE_BPS / 10_000) * ngn;
+    const ngnNet = ngn - fxNgn - feeNgn;
+    let raw = 0;
+    for (const a of s.allocation) {
+      const src = sourceById.get(a.source_id);
+      if (src) raw += a.ngn_amount / src.price_ngn_per_usdt;
+    }
+    const vw = ngn / Math.max(raw, 1);
+    return { usdt: ngnNet / vw, vwAvgPrice: vw, fxNgn, feeNgn };
+  };
+  let metrics = computeUsdt(ngnPaid, sor);
+  const errorPct = Math.abs(metrics.usdt - input.targetUsdt) / input.targetUsdt;
+  if (errorPct > 0.005) {
+    ngnPaid = ngnPaid * (input.targetUsdt / metrics.usdt);
+    solved = await runSolver(ngnPaid, sources);
+    sor = solved.sor;
+    engine = solved.engine;
+    metrics = computeUsdt(ngnPaid, sor);
   }
-  // Apply the cost penalty (effectively the spread+slippage already counted).
-  // We use ngnAfterFees / vw_avg_price to keep the breakdown internally consistent.
-  const vwAvgPrice = input.amountNgn / Math.max(usdtReceivedRaw, 1);
-  const usdtReceived = ngnAfterFees / vwAvgPrice;
+  const { usdt: usdtReceived, vwAvgPrice, fxNgn, feeNgn } = metrics;
 
   // Off-ramp leg
   const offRampCostCny =
@@ -138,18 +162,16 @@ export async function getQuote(input: {
   const cnyDelivered = usdtReceived * psp.price_cny_per_usdt - offRampCostCny;
 
   const totalCostUsd =
-    (fxCostNgn + platformFeeNgn) / vwAvgPrice +
-    offRampCostCny / psp.price_cny_per_usdt +
-    NETWORK_FEES_USD;
-  const swiftCostUsd = (input.amountNgn / vwAvgPrice) * SWIFT_FRICTION;
+    (fxNgn + feeNgn) / vwAvgPrice + offRampCostCny / psp.price_cny_per_usdt + NETWORK_FEES_USD;
+  const swiftCostUsd = (ngnPaid / vwAvgPrice) * SWIFT_FRICTION;
 
   const etaSeconds = Math.max(...sor.allocation.map((a) => a.predicted_delay_seconds));
 
   const breakdown = QuoteBreakdownSchema.parse({
-    ngn_paid: input.amountNgn,
+    ngn_paid: ngnPaid,
     usdt_received: usdtReceived,
     cny_delivered: cnyDelivered,
-    fx_cost_ngn: fxCostNgn,
+    fx_cost_ngn: fxNgn,
     platform_fee_bps: PLATFORM_FEE_BPS,
     off_ramp_cost_cny: offRampCostCny,
     network_fees_usd: NETWORK_FEES_USD,
@@ -165,7 +187,7 @@ export async function getQuote(input: {
     .from("transactions")
     .update({
       status: "quoted",
-      amount_ngn: input.amountNgn,
+      amount_ngn: ngnPaid,
       amount_usdt: usdtReceived,
       amount_cny: cnyDelivered,
       quote_breakdown: breakdown,

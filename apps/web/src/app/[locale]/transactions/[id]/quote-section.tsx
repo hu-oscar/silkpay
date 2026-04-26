@@ -3,10 +3,10 @@
 /**
  * Phase 4 — Quote section on the transaction detail page.
  *
- * Defaults the NGN target to the proforma's total at a sensible spot rate
- * (so Chinedu can hit "Get quote" with one click and see results immediately).
- * On submit, calls `getQuote()` Server Action → renders the breakdown +
- * SOR allocation. State is local-only here ; persistence happens server-side.
+ * The supplier's proforma states what THEY want (e.g. $30 000 USDT). The
+ * importer's question is "what NGN do I need to fund so the escrow holds
+ * exactly that USDT?". So the input is `targetUsdt` (defaulted to the
+ * proforma total), and the engine works backwards to compute NGN.
  */
 import { ArrowRight, Loader2, RefreshCw, Sparkles, Zap } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
@@ -17,7 +17,7 @@ import { SorAllocationChart } from "@/components/sor-allocation-chart";
 import { getQuote, type GetQuoteResult } from "@/lib/quote/actions";
 import { cn } from "@/lib/utils";
 
-const NGN_PER_USDT_DEFAULT = 1573;
+const DEFAULT_TARGET_USDT = 30_000;
 
 export function QuoteSection({
   transactionId,
@@ -32,14 +32,13 @@ export function QuoteSection({
 }) {
   const t = useTranslations("quote");
   const format = useFormatter();
-  const defaultNgn = Math.round((defaultTargetUsd ?? 30_000) * NGN_PER_USDT_DEFAULT);
-  const [amountNgn, setAmountNgn] = useState<number>(defaultNgn);
+  const [targetUsdt, setTargetUsdt] = useState<number>(defaultTargetUsd ?? DEFAULT_TARGET_USDT);
   const [result, setResult] = useState<GetQuoteResult | null>(initialQuote);
   const [isPending, startTransition] = useTransition();
 
   function fetchQuote() {
     startTransition(async () => {
-      const r = await getQuote({ transactionId, amountNgn });
+      const r = await getQuote({ transactionId, targetUsdt });
       setResult(r);
     });
   }
@@ -72,11 +71,11 @@ export function QuoteSection({
             <input
               type="number"
               inputMode="numeric"
-              min={100_000}
-              max={500_000_000}
-              step={100_000}
-              value={amountNgn}
-              onChange={(e) => setAmountNgn(Number(e.target.value) || 0)}
+              min={100}
+              max={300_000}
+              step={500}
+              value={targetUsdt}
+              onChange={(e) => setTargetUsdt(Number(e.target.value) || 0)}
               disabled={isPending}
               className={cn(
                 "w-full rounded-md border border-ink-200 bg-ink-50 px-3 py-3 pr-16 text-xl font-semibold tnum",
@@ -85,18 +84,19 @@ export function QuoteSection({
               )}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-ink-500">
-              NGN
+              USD
             </span>
           </div>
+          <p className="mt-1 text-xs text-ink-500">{t("amountHint")}</p>
         </label>
 
         <button
           type="button"
           onClick={fetchQuote}
-          disabled={isPending || amountNgn < 100_000}
+          disabled={isPending || targetUsdt < 100}
           className={cn(
             "w-full inline-flex items-center justify-center gap-2 rounded-md bg-ink-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-ink-700",
-            (isPending || amountNgn < 100_000) && "opacity-60 cursor-not-allowed",
+            (isPending || targetUsdt < 100) && "opacity-60 cursor-not-allowed",
           )}
         >
           {isPending ? (

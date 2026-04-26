@@ -178,7 +178,8 @@
   "quote": {
     "inputTitle": "报价引擎",
     "fromProforma": "形式发票:{amount}",
-    "amountLabel": "您想发送多少?(奈拉)",
+    "amountLabel": "供应商应收金额?(美元)",
+    "amountHint": "USDT 托管交付金额 — Yuán 自动计算您需支付的奈拉金额。",
     "getQuote": "获取报价",
     "fetching": "获取中…",
     "refresh": "刷新报价",

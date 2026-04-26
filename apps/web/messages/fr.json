@@ -178,7 +178,8 @@
   "quote": {
     "inputTitle": "Quote engine",
     "fromProforma": "Proforma : {amount}",
-    "amountLabel": "Combien veux-tu envoyer ? (NGN)",
+    "amountLabel": "Combien le fournisseur doit recevoir ? (USD)",
+    "amountHint": "Montant à délivrer dans l'escrow USDT — Yuán calcule combien tu paies en NGN.",
     "getQuote": "Lancer le quote",
     "fetching": "Récupération en cours…",
     "refresh": "Rafraîchir le quote",
