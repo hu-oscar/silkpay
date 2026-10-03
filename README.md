@@ -20,11 +20,9 @@ Monorepo (`pnpm` + `turbo`). Three apps, one shared scaffold.
 
 ---
 
-## What's built (Phases 0 → 7)
+## What's built 
 
-End-to-end demo flow, in order :
-
-1. **Auth & dashboard** — cookie-based fake-user switcher (Chinedu importer / Mr. Chen supplier / Silkpay arbiter), KPIs (saved vs SWIFT, active, settled), localized nav. Real Supabase Postgres backend.
+1. **Auth & dashboard** — cookie-based user switcher (Chinedu importer / Mr. Chen supplier / Silkpay arbiter), KPIs (saved vs SWIFT, active, settled), localized nav. Real Supabase Postgres backend.
 2. **KYB onboarding** — 3-step wizard with country-conditional Zod validation (African registries — e.g. CAC + BVN for NG — and Chinese business license). **Live verification panel** subscribes via Supabase Realtime — Smile ID / ComplyAdvantage / Tianyancha badges animate from `Idle → Verifying → Approved` as the server flips rows.
 3. **Document intake (Claude Vision)** — drag-drop a proforma invoice (PDF/JPEG/PNG/WebP, 8 MB cap), parsed by `claude-opus-4-7` via `messages.parse()` + `zodOutputFormat()`. Cached system prompt (`cache_control: ephemeral`) keeps cost ≈ $0.03–0.06/parse. Confidence-graded result panel + manual-review banner < 0.85.
 4. **Quote engine + SOR** — fans out to 4 liquidity sources (Yellow Card, 2 OTC desks, PSP for the USDT→CNY leg) in parallel, hits the FastAPI/CVXPY solver, returns a Wise-style breakdown (local currency paid → USDT held → CNY delivered, fees, savings vs 7.5% SWIFT) + recharts donut of the source allocation. TS greedy fallback when the Python service is unreachable (e.g. Vercel).
@@ -133,15 +131,6 @@ Pre-commit hook runs lint-staged + conditional typecheck / forge / pytest based 
 - **Web** — Vercel. See [`DEPLOY.md`](DEPLOY.md) (root directory `apps/web`, install command walks up to monorepo root via `apps/web/vercel.json`).
 - **SOR** — Modal. `cd services/sor && modal deploy app.py`.
 - **Contracts** — `forge script` against the target chain RPC (Sepolia for the demo; chain selected by SOR in production). Mainnet deploy is gated on a completed Hacken/Cyfrin audit + Code4rena contest (see CLAUDE.md hard constraints).
-
----
-
-## Project docs
-
-- [`AGENTS.md`](AGENTS.md) — master plan, conventions, protected areas.
-- [`MEMORY.md`](MEMORY.md) — phase log, architectural decisions (dated, never deleted).
-- [`CLAUDE.md`](CLAUDE.md) — Claude Code config + hard constraints.
-- [`agent_docs/`](agent_docs/) — tech stack, code patterns, product requirements, testing loop.
 
 ---
 
