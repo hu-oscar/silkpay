@@ -1,4 +1,4 @@
-"""Yuán SOR — Modal deployment wrapper.
+"""Silkpay SOR — Modal deployment wrapper.
 
 Wraps the FastAPI app + the trained XGBoost model into a Modal serverless
 function so production (Vercel) can hit the ML-calibrated /optimize_ml
@@ -34,7 +34,7 @@ image = (
     .add_local_file(HERE / "model.joblib", remote_path="/root/model.joblib")
 )
 
-app = modal.App("yuan-sor")
+app = modal.App("silkpay-sor")
 
 
 @app.function(

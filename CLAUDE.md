@@ -1,8 +1,8 @@
-# CLAUDE.md — Claude Code Configuration for Yuán
+# CLAUDE.md — Claude Code Configuration for Silkpay
 
 ## Project Context
 
-- **App:** Yuán (元) — *"Pay China like it's next door."*
+- **App:** Silkpay — _"Pay China like it's next door."_
 - **Stack:** Next.js 15 (App Router) + TypeScript strict + shadcn/ui + Tailwind + next-intl (FR/EN/中文); Clerk auth; Supabase Postgres + Storage + Realtime + Vault; FastAPI on Modal (Python); Solidity 0.8.24+ with Foundry on BNB Chain; Anthropic Claude Sonnet (vision); CVXPY + XGBoost on Modal; Inngest for events; Tenderly + Sentry + Posthog.
 - **Stage:** MVP development — Phase 1 (project setup + Foundry ramp-up). 90-day solo build with heavy AI assistance.
 - **User level:** B (Developer) — Oscar has full-stack + smart contract + quant background. Skip beginner-level explanations; assume Solidity / CVXPY / Modal / Next.js 15 fluency.
@@ -33,6 +33,7 @@
 ## Useful Subagents
 
 This codebase benefits from delegating to subagents for:
+
 - **Explore (codebase search)** — when you need to find files / patterns across the monorepo.
 - **Plan (architecture design)** — when designing the architecture for a complex feature (escrow refactor, SOR formulation change).
 - **general-purpose (multi-step research)** — when investigating an unfamiliar library or upstream API.
@@ -41,31 +42,29 @@ Trust-but-verify subagent results: an agent's summary describes intent, not nece
 
 ## Commands
 
-| Purpose | Command |
-|---|---|
-| Install | `pnpm install` |
-| Dev (web) | `pnpm --filter web dev` |
-| Build (web) | `pnpm --filter web build` |
-| Lint | `pnpm lint` |
-| Typecheck | `pnpm typecheck` |
-| Unit tests (web) | `pnpm --filter web test` |
-| E2E (Playwright) | `pnpm --filter web test:e2e` |
-| Foundry tests | `cd apps/contracts && forge test -vvv` |
-| Foundry coverage | `cd apps/contracts && forge coverage` |
-| Slither | `cd apps/contracts && slither . --filter-paths "lib/"` |
-| Python tests | `cd services/<name> && pytest -q` |
-| Modal local dev | `cd services/<name> && modal serve app.py` |
-| Modal deploy | `cd services/<name> && modal deploy app.py` |
-| DB migration push | `supabase db push` |
+| Purpose           | Command                                                |
+| ----------------- | ------------------------------------------------------ |
+| Install           | `pnpm install`                                         |
+| Dev (web)         | `pnpm --filter web dev`                                |
+| Build (web)       | `pnpm --filter web build`                              |
+| Lint              | `pnpm lint`                                            |
+| Typecheck         | `pnpm typecheck`                                       |
+| Unit tests (web)  | `pnpm --filter web test`                               |
+| E2E (Playwright)  | `pnpm --filter web test:e2e`                           |
+| Foundry tests     | `cd apps/contracts && forge test -vvv`                 |
+| Foundry coverage  | `cd apps/contracts && forge coverage`                  |
+| Slither           | `cd apps/contracts && slither . --filter-paths "lib/"` |
+| Python tests      | `cd services/<name> && pytest -q`                      |
+| Modal local dev   | `cd services/<name> && modal serve app.py`             |
+| Modal deploy      | `cd services/<name> && modal deploy app.py`            |
+| DB migration push | `supabase db push`                                     |
 
 ## Pointers
 
 - `AGENTS.md` — universal master plan (read first).
 - `MEMORY.md` — active phase, decisions log, known issues (update after milestones).
-- `REVIEW-CHECKLIST.md` — pre-merge checklist.
 - `agent_docs/project_brief.md` — vision + conventions + key principles.
 - `agent_docs/tech_stack.md` — full deps + setup commands + canonical examples.
 - `agent_docs/code_patterns.md` — architecture / data fetching / state / errors / Solidity / Python / Next.js patterns.
 - `agent_docs/product_requirements.md` — distilled PRD (features, user stories, success metrics, V1 scope boundary).
 - `agent_docs/testing.md` — frameworks, coverage, verification loop.
-- `docs/PRD-Yuan-MVP.md` + `docs/TechDesign-Yuan-MVP.md` + `docs/research-Yuan.md` — original sources of truth.

@@ -26,10 +26,10 @@
       "amountLabel": "订单金额(美元)",
       "amountPlaceholder": "30,000",
       "swiftLabel": "SWIFT 预估成本",
-      "yuanLabel": "使用 Silkpay 成本",
+      "silkpayLabel": "使用 Silkpay 成本",
       "savingsLabel": "您节省",
       "swiftRate": "≈ 7.5% 摩擦成本",
-      "yuanRate": "≈ 1.8% 摩擦成本(汇率 + 平台 + 入金/出金)",
+      "silkpayRate": "≈ 1.8% 摩擦成本(汇率 + 平台 + 入金/出金)",
       "perTransaction": "每笔交易"
     },
     "valueProps": {

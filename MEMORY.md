@@ -43,7 +43,7 @@ _(Log specific choices made during the build here so future agents respect them.
 - **2026-04-25** — SOR safety: **fallback to rule-based allocation if ML prediction diverges >50 bps from baseline**, plus drift monitor (>2σ over 7 days = freeze model). Hard solver constraints (depth, daily limit, max 60% per source) are the ultimate guardrail.
 - **2026-04-25** — **Pull payment** pattern in escrow contracts (seller calls `claim()`); never auto-push via `transfer()`.
 - **2026-04-25** — **Tether blacklist check** (`IUSDT.isBlackListed(address)`) required before every USDT transfer; trigger emergency redirect path if hit.
-- **2026-04-25** — **Hackathon track choice: Option B**. Custom `TradeEscrow.sol` simple (single arbiter EOA, no Safe wrapper) on BSC testnet + real CVXPY solver in `services/sor/` (local FastAPI uvicorn) called from Next.js Server Actions. Skip Modal cloud, multi-sig hardware wallets, Smile ID/Tianyancha/ComplyAdvantage (simulated 3s timeout), audit, Inngest. Reason: 22–30h target for end-to-end demo MVP; Option A too thin for technical pitch defense, Option C exceeds hackathon scope. Path d'upgrade vers V1 prod documenté dans `Yuan-MVP-Plan-Hackathon.pdf`.
+- **2026-04-25** — **Hackathon track choice: Option B**. Custom `TradeEscrow.sol` simple (single arbiter EOA, no Safe wrapper) on BSC testnet + real CVXPY solver in `services/sor/` (local FastAPI uvicorn) called from Next.js Server Actions. Skip Modal cloud, multi-sig hardware wallets, Smile ID/Tianyancha/ComplyAdvantage (simulated 3s timeout), audit, Inngest. Reason: 22–30h target for end-to-end demo MVP; Option A too thin for technical pitch defense, Option C exceeds hackathon scope.
 - **2026-04-25** — **Next.js bumped 15 → 16.2.4** during scaffold (16 is now latest stable, released after the Tech Design was written). App Router API unchanged; `next-intl@4.9.x` is the version that supports Next 16 as peer.
 
 ## 🐛 Known Issues & Quirks
@@ -132,7 +132,7 @@ _(Log current bugs or weird workarounds here. Empty at project init.)_
 - `apps/web/src/lib/supabase/client.ts` — browser client using `anon` key for future Realtime channel subscriptions (Phase 2 + 6).
 - `apps/web/src/lib/db/database.ts` — manual `Database<Schema>` type for typed `.from(table)` queries (mirrors the SQL migration). Uses the canonical `{ [_ in never]: never }` shape for Views/Functions/Enums/CompositeTypes that supabase-js v2 expects.
 - `apps/web/src/lib/db/queries.ts` — fully rewritten to call Supabase. Uses FK-aliased joins (`organizations!transactions_buyer_org_id_fkey`) for buyer/seller hydration. Same signatures as before — call sites unchanged.
-- `apps/web/scripts/seed-db.ts` — idempotent seed script (UPSERT on `id`) for the Chinedu↔Chen scenario. Runnable via `pnpm --filter @yuan/web db:seed` (uses Node's native `--env-file=.env.local`).
+- `apps/web/scripts/seed-db.ts` — idempotent seed script (UPSERT on `id`) for the Chinedu↔Chen scenario. Runnable via `pnpm --filter @silkpay/web db:seed` (uses Node's native `--env-file=.env.local`).
 - Seed UUIDs fixed: tranche IDs are now valid UUIDs (e.g. `00000000-0000-0000-0000-000000000211`) — Postgres `id UUID` enforces this.
 - `lib/db/store.ts` (in-memory) **deleted** — Supabase is now the only source of truth.
 - `lib/env.ts` upgraded: required Supabase keys (URL + anon + service_role) validated at boot via Zod; optional vars (`ANTHROPIC_API_KEY` etc.) use a `preprocess` step to coalesce `""` → `undefined` so a half-filled `.env.local` doesn't crash boot.
@@ -142,7 +142,7 @@ _(Log current bugs or weird workarounds here. Empty at project init.)_
 
 - **Decision: skipped Clerk + Supabase setup for hackathon speed.** Replaced with:
   - Hardcoded "fake users" in `apps/web/src/lib/auth/fake-users.ts` (Chinedu importer, Mr. Chen supplier, Yuán arbiter), each bound to a seeded org.
-  - Cookie-based user switcher (`yuan_user`) with Server Action in `lib/auth/actions.ts` and `<UserSwitcher>` dropdown in the nav. Lets the demo flip perspective on-camera.
+  - Cookie-based user switcher (`silkpay_user`) with Server Action in `lib/auth/actions.ts` and `<UserSwitcher>` dropdown in the nav. Lets the demo flip perspective on-camera.
   - In-memory store (`lib/db/store.ts`) keyed under a global symbol to survive Next.js dev hot-reloads.
 - `supabase/migrations/0001_initial.sql` — full schema from Tech Design (organizations, kyb_applications, transactions, tranches, audit_events, sor_executions) + RLS-enabled, **kept as documentation/future migration only**. Not pushed to any DB.
 - `apps/web/src/lib/db/schema.ts` — full TS types mirroring the SQL (incl. `Transaction`, `Tranche`, `ParsedProforma`, `QuoteBreakdown`, `SorAllocation`, `AuditEvent`).

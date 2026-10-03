@@ -1,12 +1,13 @@
-# AGENTS.md — Master Plan for Yuán
+# AGENTS.md — Master Plan for Silkpay
 
 ## Project Overview & Stack
 
-**App:** Yuán (元) — *"Pay China like it's next door."*
+**App:** Silkpay — _"Pay China like it's next door."_
 
 **Overview:** B2B cross-border payment platform for the Africa–China trade corridor (single corridor V1: Lagos ↔ Yiwu/Shenzhen). Combines stablecoin rails (USDT BEP-20), 3-tranche programmable escrow, smart order routing across NGN→USDT liquidity sources, and AI document intake (Claude Vision) so SME importers like "Chinedu" can settle a $30k order to China in T+0 with full counterparty protection — vs. 5–7% friction and 3–5 days via SWIFT. Primary users: Nigerian importers (FR/EN, mobile-first PWA + WhatsApp) and Chinese suppliers (中文, email + WeChat msg V1, Mini Program V2).
 
 **Stack:**
+
 - **Frontend:** Next.js 15 (App Router) + TypeScript strict + Tailwind + shadcn/ui + next-intl (FR/EN/中文)
 - **Auth:** Clerk (organizations enabled) — Supabase Auth as Year-2 fallback
 - **Backend:** Supabase (Postgres + Storage + Realtime + Vault) + FastAPI on Modal (Python services)
@@ -20,13 +21,14 @@
 - **Compliance:** Smile ID (KYC Nigeria + BVN match) + ComplyAdvantage (sanctions/PEP) + Tianyancha (China business registry)
 
 **Critical Constraints:**
+
 - **Mobile-first low-bandwidth required** (3G Lagos baseline; payload <50KB per route, Lighthouse mobile >90).
 - **Strict TypeScript** — no `any` (use `unknown` + type guards); Zod schemas at every API boundary.
 - **Bilinguisme natif** (FR/EN/中文) — not a language toggle, real i18n with next-intl + locale-aware `Intl.NumberFormat`.
 - **Smart contract audit non-negotiable pre-mainnet** — Hacken or Cyfrin ($50–80k) + Code4rena 7-day contest in parallel.
 - **No placeholder content in production** — no Lorem ipsum, no fake testimonials, no half-working features.
 - **Single corridor V1** — Lagos ↔ Yiwu/Shenzhen only. No multi-corridor refactor until 100+ active Lagos importers.
-- **Solo founder build, 90-day MVP timeline** — every feature must serve the pitch *"single corridor, real transactions, real economics."*
+- **Solo founder build, 90-day MVP timeline** — every feature must serve the pitch _"single corridor, real transactions, real economics."_
 
 ## Setup & Commands
 
@@ -79,7 +81,7 @@ These rules apply across all AI coding assistants (Claude Code, Cursor, Copilot,
 1. **Plan Before Execution:** ALWAYS propose a brief step-by-step plan before changing more than one file. For Solidity / SOR / ML code, propose architecture + invariants and wait for human approval before generating implementation.
 2. **Refactor Over Rewrite:** Prefer incremental refactors of existing functions over wholesale rewrites of large blocks.
 3. **Context Compaction:** Persist state to `MEMORY.md` (or a `spec.md` per feature) instead of filling chat history during long sessions.
-4. **Iterative Verification:** Run lint + typecheck + relevant tests after each logical change. Fix failures before proceeding. See `REVIEW-CHECKLIST.md`.
+4. **Iterative Verification:** Run lint + typecheck + relevant tests after each logical change. Fix failures before proceeding.
 5. **Read First:** Always read `AGENTS.md` and `agent_docs/` before starting a task. Refer to `agent_docs/tech_stack.md` for dependencies before suggesting a new library.
 6. **No Hallucinated Solidity:** AI-generated Solidity edge cases must pass Foundry tests + invariants + Slither + manual review before any testnet deploy. Never deploy to mainnet without a completed audit.
 7. **Cite Files + Reasons:** When editing, name the file and the reason. Flag security implications proactively.
@@ -115,21 +117,25 @@ These rules apply across all AI coding assistants (Claude Code, Cursor, Copilot,
 ## Engineering Constraints (Anti-Vibe)
 
 ### Type Safety (no compromises)
+
 - `any` is **forbidden** — use `unknown` with type guards.
 - All function parameters and returns typed.
 - Zod (TS) / Pydantic (Py) for runtime validation at every boundary.
 
 ### Architectural Sovereignty
+
 - Routes / controllers handle request/response only.
 - All business logic in `services/` or `core/`.
 - No DB calls from route handlers.
 
 ### Library Governance
+
 - Check `package.json` / `pyproject.toml` before suggesting new dependencies.
 - Prefer native APIs over libraries (`fetch` over `axios`).
 - Use the project's standard data-fetching approach as specified in `agent_docs/tech_stack.md` (RSC + Server Actions, Supabase realtime subscriptions for live data — no extra query lib).
 
 ### Workflow Discipline
+
 - Pre-commit hooks must pass (or ask if they should be bypassed).
 - If verification fails, fix issues before continuing.
 - One specific clarifying question if context is missing — then proceed.
@@ -145,6 +151,3 @@ See `MEMORY.md` for the current task and next steps. Update `MEMORY.md` after ev
 - `agent_docs/code_patterns.md` — architecture / data-fetching / state / error handling / validation patterns
 - `agent_docs/product_requirements.md` — full PRD distilled (features, user stories, success metrics)
 - `agent_docs/testing.md` — test frameworks, coverage rules, verification loop
-- `docs/PRD-Yuan-MVP.md` — original PRD (source of truth)
-- `docs/TechDesign-Yuan-MVP.md` — original Tech Design (source of truth)
-- `docs/research-Yuan.md` — market + technical research

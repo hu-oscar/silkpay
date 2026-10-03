@@ -29,7 +29,7 @@
 ## Repo Structure (monorepo, `pnpm` workspaces)
 
 ```
-yuan-mvp/
+silkpay/
 ├── apps/
 │   ├── web/             # Next.js 15 App Router
 │   └── contracts/       # Foundry: src/, test/, script/
@@ -40,20 +40,17 @@ yuan-mvp/
 ├── packages/
 │   ├── shared/          # cross-package utils
 │   └── types/           # shared TS types + Zod schemas mirror
-├── docs/                # PRD, TechDesign, research (source-of-truth)
 ├── agent_docs/          # AI agent instruction set (this folder)
 ├── AGENTS.md            # universal master plan
 ├── MEMORY.md            # active state + decisions log
-├── CLAUDE.md            # Claude Code pointer file
-├── .cursor/rules/       # Cursor rule set
-└── REVIEW-CHECKLIST.md  # pre-merge checklist
+└── CLAUDE.md            # Claude Code pointer file
 ```
 
 ## Setup Commands (Day 2 init — run once)
 
 ```bash
 # Monorepo scaffold
-mkdir yuan-mvp && cd yuan-mvp
+mkdir silkpay && cd silkpay
 git init && pnpm init
 mkdir -p apps/web apps/contracts services/sor services/intake services/quote
 mkdir -p packages/shared packages/types
@@ -96,21 +93,21 @@ git add . && git commit -m "Initial monorepo scaffold"
 
 ## Daily Commands
 
-| Command | Purpose |
-|---|---|
-| `pnpm install` | Install all workspaces |
-| `pnpm --filter web dev` | Next.js dev server (`:3000`) |
-| `pnpm --filter web build` | Production build |
-| `pnpm lint` | ESLint across all packages |
-| `pnpm typecheck` | `tsc --noEmit` across all packages |
-| `pnpm --filter web test` | Vitest unit tests |
-| `pnpm --filter web test:e2e` | Playwright E2E |
-| `cd apps/contracts && forge test -vvv` | Foundry tests |
-| `cd apps/contracts && forge coverage` | Coverage report |
-| `cd services/<name> && pytest -q` | Python unit tests |
-| `cd services/<name> && modal serve app.py` | Local Modal dev |
-| `cd services/<name> && modal deploy app.py` | Push to Modal |
-| `supabase db push` | Apply migrations to staging |
+| Command                                     | Purpose                            |
+| ------------------------------------------- | ---------------------------------- |
+| `pnpm install`                              | Install all workspaces             |
+| `pnpm --filter web dev`                     | Next.js dev server (`:3000`)       |
+| `pnpm --filter web build`                   | Production build                   |
+| `pnpm lint`                                 | ESLint across all packages         |
+| `pnpm typecheck`                            | `tsc --noEmit` across all packages |
+| `pnpm --filter web test`                    | Vitest unit tests                  |
+| `pnpm --filter web test:e2e`                | Playwright E2E                     |
+| `cd apps/contracts && forge test -vvv`      | Foundry tests                      |
+| `cd apps/contracts && forge coverage`       | Coverage report                    |
+| `cd services/<name> && pytest -q`           | Python unit tests                  |
+| `cd services/<name> && modal serve app.py`  | Local Modal dev                    |
+| `cd services/<name> && modal deploy app.py` | Push to Modal                      |
+| `supabase db push`                          | Apply migrations to staging        |
 
 ## Environment Variables (production — set in Vercel + Modal secrets)
 
@@ -179,7 +176,11 @@ const QuoteInput = z.object({
 
 export type QuoteResult =
   | { ok: true; data: QuoteBreakdown }
-  | { ok: false; code: "VALIDATION" | "QUOTE_INSUFFICIENT_LIQUIDITY" | "UPSTREAM_TIMEOUT"; message: string };
+  | {
+      ok: false;
+      code: "VALIDATION" | "QUOTE_INSUFFICIENT_LIQUIDITY" | "UPSTREAM_TIMEOUT";
+      message: string;
+    };
 
 export async function getQuote(raw: unknown): Promise<QuoteResult> {
   const parsed = QuoteInput.safeParse(raw);
@@ -194,10 +195,18 @@ export async function getQuote(raw: unknown): Promise<QuoteResult> {
     // Normalize errors at the boundary — never leak stack traces to UI.
     Sentry.captureException(err, { tags: { surface: "quote" } });
     if (err instanceof QuoteUpstreamTimeout) {
-      return { ok: false, code: "UPSTREAM_TIMEOUT", message: "One or more sources timed out. Retry shortly." };
+      return {
+        ok: false,
+        code: "UPSTREAM_TIMEOUT",
+        message: "One or more sources timed out. Retry shortly.",
+      };
     }
     if (err instanceof QuoteInsufficientLiquidity) {
-      return { ok: false, code: "QUOTE_INSUFFICIENT_LIQUIDITY", message: "Not enough live liquidity to quote this size." };
+      return {
+        ok: false,
+        code: "QUOTE_INSUFFICIENT_LIQUIDITY",
+        message: "Not enough live liquidity to quote this size.",
+      };
     }
     throw err;
   }
@@ -294,7 +303,13 @@ type QuoteCardProps = {
   expiresAt: Date;
 };
 
-export function QuoteCard({ amountNgn, amountCny, totalCostUsd, swiftCostUsd, expiresAt }: QuoteCardProps) {
+export function QuoteCard({
+  amountNgn,
+  amountCny,
+  totalCostUsd,
+  swiftCostUsd,
+  expiresAt,
+}: QuoteCardProps) {
   const t = useTranslations("quote");
   const format = useFormatter();
   const savingsUsd = swiftCostUsd - totalCostUsd;
@@ -307,12 +322,18 @@ export function QuoteCard({ amountNgn, amountCny, totalCostUsd, swiftCostUsd, ex
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-2 [font-feature-settings:'tnum']">
           <span className="text-muted-foreground">{t("youPay")}</span>
-          <span className="text-right">{format.number(amountNgn, { style: "currency", currency: "NGN" })}</span>
+          <span className="text-right">
+            {format.number(amountNgn, { style: "currency", currency: "NGN" })}
+          </span>
           <span className="text-muted-foreground">{t("supplierGets")}</span>
-          <span className="text-right">{format.number(amountCny, { style: "currency", currency: "CNY" })}</span>
+          <span className="text-right">
+            {format.number(amountCny, { style: "currency", currency: "CNY" })}
+          </span>
         </div>
         <div className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-900 [font-feature-settings:'tnum']">
-          {t("vsSwiftSavings", { savings: format.number(savingsUsd, { style: "currency", currency: "USD" }) })}
+          {t("vsSwiftSavings", {
+            savings: format.number(savingsUsd, { style: "currency", currency: "USD" }),
+          })}
         </div>
         <Button className="w-full">{t("continue")}</Button>
       </CardContent>

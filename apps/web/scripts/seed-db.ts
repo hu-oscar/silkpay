@@ -4,7 +4,7 @@
  * Idempotent — uses UPSERT on (id) so re-running is safe.
  *
  * Usage:
- *   pnpm --filter @yuan/web db:seed
+ *   pnpm --filter @silkpay/web db:seed
  *
  * Requires `apps/web/.env.local` with `SUPABASE_SERVICE_ROLE_KEY`.
  */

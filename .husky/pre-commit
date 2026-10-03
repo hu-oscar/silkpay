@@ -5,9 +5,9 @@ pnpm exec lint-staged || exit 1
 
 # If any web sources changed, run typecheck + lint
 if git diff --cached --name-only | grep -qE '^apps/web/'; then
-  echo "→ Typecheck + lint @yuan/web"
-  pnpm --filter @yuan/web typecheck || exit 1
-  pnpm --filter @yuan/web lint || exit 1
+  echo "→ Typecheck + lint @silkpay/web"
+  pnpm --filter @silkpay/web typecheck || exit 1
+  pnpm --filter @silkpay/web lint || exit 1
 fi
 
 # If any contract sources changed, run forge test

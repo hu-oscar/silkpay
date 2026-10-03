@@ -8,19 +8,19 @@
 
 Monorepo (`pnpm` + `turbo`). Three apps, one shared scaffold.
 
-| Path | What it is |
-|---|---|
-| `apps/web` | Next.js 16 (App Router) + TypeScript strict + Tailwind v4 + next-intl (FR/EN/zh). All the user-facing flows. |
-| `apps/contracts` | Foundry + Solidity 0.8.24. `TradeEscrow.sol` (single-arbiter EOA escrow). Chain-agnostic — currently deployed to Sepolia for the hackathon demo (faucet-friendly); production targets the chain the SOR selects per route. |
-| `services/sor` | FastAPI + CVXPY (CLARABEL solver) + XGBoost. Smart-order-router that splits a local-currency→USDT order across multiple liquidity sources to minimize slippage. Deployed on Modal. |
-| `supabase/` | Postgres schema migrations + Realtime publication. |
-| `samples/` | Sample proforma invoices for the document-intake demo (gitignored). |
-| `agent_docs/` | Internal docs (tech stack, code patterns, product requirements, testing). |
-| `AGENTS.md`, `MEMORY.md`, `CLAUDE.md` | Source of truth for the AI-assisted build workflow. |
+| Path                                  | What it is                                                                                                                                                                                                                 |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web`                            | Next.js 16 (App Router) + TypeScript strict + Tailwind v4 + next-intl (FR/EN/zh). All the user-facing flows.                                                                                                               |
+| `apps/contracts`                      | Foundry + Solidity 0.8.24. `TradeEscrow.sol` (single-arbiter EOA escrow). Chain-agnostic — currently deployed to Sepolia for the hackathon demo (faucet-friendly); production targets the chain the SOR selects per route. |
+| `services/sor`                        | FastAPI + CVXPY (CLARABEL solver) + XGBoost. Smart-order-router that splits a local-currency→USDT order across multiple liquidity sources to minimize slippage. Deployed on Modal.                                         |
+| `supabase/`                           | Postgres schema migrations + Realtime publication.                                                                                                                                                                         |
+| `samples/`                            | Sample proforma invoices for the document-intake demo (gitignored).                                                                                                                                                        |
+| `agent_docs/`                         | Internal docs (tech stack, code patterns, product requirements, testing).                                                                                                                                                  |
+| `AGENTS.md`, `MEMORY.md`, `CLAUDE.md` | Source of truth for the AI-assisted build workflow.                                                                                                                                                                        |
 
 ---
 
-## What's built 
+## What's built
 
 1. **Auth & dashboard** — cookie-based user switcher (Chinedu importer / Mr. Chen supplier / Silkpay arbiter), KPIs (saved vs SWIFT, active, settled), localized nav. Real Supabase Postgres backend.
 2. **KYB onboarding** — 3-step wizard with country-conditional Zod validation (African registries — e.g. CAC + BVN for NG — and Chinese business license). **Live verification panel** subscribes via Supabase Realtime — Smile ID / ComplyAdvantage / Tianyancha badges animate from `Idle → Verifying → Approved` as the server flips rows.
@@ -35,7 +35,7 @@ Monorepo (`pnpm` + `turbo`). Three apps, one shared scaffold.
 
 ## Stack
 
-- **Frontend** — Next.js 16.2.4 (App Router) · TypeScript strict (no `any`) · Tailwind v4 · shadcn/ui · next-intl 4.x (FR/EN/zh) · react-hook-form + Zod · recharts · lucide-react.
+- **Frontend** — Next.js 16 (App Router) · TypeScript strict (no `any`) · Tailwind v4 · shadcn/ui · next-intl 4.x (FR/EN/zh) · react-hook-form + Zod · recharts · lucide-react.
 - **Backend (Next.js)** — Server Actions only. No DB calls from route handlers. `@supabase/ssr` + `@supabase/supabase-js`.
 - **Database** — Supabase Postgres + Realtime (Storage + Vault deferred to V1 prod).
 - **Smart contracts** — Foundry, Solidity 0.8.24, OpenZeppelin. Chain-agnostic; the demo runs on Sepolia (faucet-friendly). The SOR picks the chain per route in production. Single-arbiter EOA for hackathon; Safe 3-of-5 multi-sig is the V1 prod path.
@@ -83,7 +83,7 @@ Run the migrations in the Supabase SQL Editor (no CLI dependency) :
 Seed the Chinedu↔Chen demo scenario :
 
 ```bash
-pnpm --filter @yuan/web db:seed
+pnpm --filter @silkpay/web db:seed
 ```
 
 ### 4. Start the SOR service (terminal 1)
@@ -100,7 +100,7 @@ pnpm sor:dev    # uvicorn on :8000
 ### 5. Start the web app (terminal 2)
 
 ```bash
-pnpm --filter @yuan/web dev    # Next.js on :3000 (or :3001 if 3000 is taken)
+pnpm --filter @silkpay/web dev    # Next.js on :3000 (or :3001 if 3000 is taken)
 ```
 
 Open <http://localhost:3000/fr/dashboard>. Use the user-switcher in the nav to flip between Chinedu (importer), Chen (supplier), and Silkpay (arbiter).
@@ -109,18 +109,18 @@ Open <http://localhost:3000/fr/dashboard>. Use the user-switcher in the nav to f
 
 ## Common scripts
 
-| Command | What |
-|---|---|
-| `pnpm dev` | Run all apps via turbo |
-| `pnpm --filter @yuan/web dev` | Web only |
-| `pnpm sor:dev` | FastAPI SOR (uvicorn :8000) |
-| `pnpm build` | Full monorepo build |
-| `pnpm lint` | ESLint across the workspace |
-| `pnpm typecheck` | `tsc --noEmit` everywhere |
-| `pnpm test` | Web unit tests |
-| `pnpm test:contracts` | `forge test -vvv` |
-| `pnpm test:sor` | `pytest -q` against the solver |
-| `pnpm --filter @yuan/web db:seed` | Reseed the demo scenario |
+| Command                              | What                           |
+| ------------------------------------ | ------------------------------ |
+| `pnpm dev`                           | Run all apps via turbo         |
+| `pnpm --filter @silkpay/web dev`     | Web only                       |
+| `pnpm sor:dev`                       | FastAPI SOR (uvicorn :8000)    |
+| `pnpm build`                         | Full monorepo build            |
+| `pnpm lint`                          | ESLint across the workspace    |
+| `pnpm typecheck`                     | `tsc --noEmit` everywhere      |
+| `pnpm test`                          | Web unit tests                 |
+| `pnpm test:contracts`                | `forge test -vvv`              |
+| `pnpm test:sor`                      | `pytest -q` against the solver |
+| `pnpm --filter @silkpay/web db:seed` | Reseed the demo scenario       |
 
 Pre-commit hook runs lint-staged + conditional typecheck / forge / pytest based on changed paths. Don't `--no-verify` past a hook failure — fix and re-stage.
 

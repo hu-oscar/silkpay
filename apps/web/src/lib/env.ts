@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Yuán env vars.
+ * Silkpay env vars.
  *
  * Supabase keys are REQUIRED (the app reads/writes Postgres).
  * Anthropic key is optional until Phase 3 (Claude Vision document intake).

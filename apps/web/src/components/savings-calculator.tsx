@@ -6,7 +6,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const SWIFT_RATE = 0.075;
-const YUAN_RATE = 0.018;
+const SILKPAY_RATE = 0.018;
 
 export function SavingsCalculator() {
   const t = useTranslations("landing.calculator");
@@ -15,8 +15,8 @@ export function SavingsCalculator() {
   const [amount, setAmount] = useState<number>(30_000);
 
   const swiftCost = amount * SWIFT_RATE;
-  const yuanCost = amount * YUAN_RATE;
-  const savings = swiftCost - yuanCost;
+  const silkpayCost = amount * SILKPAY_RATE;
+  const savings = swiftCost - silkpayCost;
 
   const fmtUsd = (n: number) =>
     format.number(n, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -25,13 +25,9 @@ export function SavingsCalculator() {
     <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
       <h2 className="text-base font-semibold text-ink-900">{t("title")}</h2>
 
-      <label className="mt-4 block text-xs font-medium text-ink-500">
-        {t("amountLabel")}
-      </label>
+      <label className="mt-4 block text-xs font-medium text-ink-500">{t("amountLabel")}</label>
       <div className="mt-1 relative">
-        <span className="absolute inset-y-0 left-3 flex items-center text-sm text-ink-500">
-          $
-        </span>
+        <span className="absolute inset-y-0 left-3 flex items-center text-sm text-ink-500">$</span>
         <input
           type="number"
           inputMode="numeric"
@@ -51,32 +47,21 @@ export function SavingsCalculator() {
       </div>
 
       <div className="mt-6 space-y-3">
+        <Row label={t("swiftLabel")} sub={t("swiftRate")} value={fmtUsd(swiftCost)} tone="muted" />
         <Row
-          label={t("swiftLabel")}
-          sub={t("swiftRate")}
-          value={fmtUsd(swiftCost)}
-          tone="muted"
-        />
-        <Row
-          label={t("yuanLabel")}
-          sub={t("yuanRate")}
-          value={fmtUsd(yuanCost)}
+          label={t("silkpayLabel")}
+          sub={t("silkpayRate")}
+          value={fmtUsd(silkpayCost)}
           tone="brand"
         />
       </div>
 
       <div className="mt-6 rounded-xl bg-emerald-50 p-4">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="text-sm font-medium text-emerald-900">
-            {t("savingsLabel")}
-          </span>
-          <span className="text-2xl font-bold tnum text-emerald-700">
-            {fmtUsd(savings)}
-          </span>
+          <span className="text-sm font-medium text-emerald-900">{t("savingsLabel")}</span>
+          <span className="text-2xl font-bold tnum text-emerald-700">{fmtUsd(savings)}</span>
         </div>
-        <p className="mt-1 text-xs text-emerald-800/80">
-          {t("perTransaction")}
-        </p>
+        <p className="mt-1 text-xs text-emerald-800/80">{t("perTransaction")}</p>
       </div>
     </div>
   );

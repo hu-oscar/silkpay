@@ -1,7 +1,7 @@
 /**
  * Server-side current-user helper.
  *
- * Reads the active fake user from a cookie (`yuan_user`). Defaults to Chinedu
+ * Reads the active fake user from a cookie (`silkpay_user`). Defaults to Chinedu
  * (importer) when missing/invalid. Always pairs the user with their org.
  */
 import "server-only";
@@ -19,7 +19,7 @@ import {
   isFakeUserId,
 } from "./fake-users";
 
-export const USER_COOKIE = "yuan_user";
+export const USER_COOKIE = "silkpay_user";
 
 export type CurrentUser = {
   user: FakeUser;

@@ -26,10 +26,10 @@
       "amountLabel": "Order amount (USD)",
       "amountPlaceholder": "30,000",
       "swiftLabel": "Estimated SWIFT cost",
-      "yuanLabel": "Cost with Silkpay",
+      "silkpayLabel": "Cost with Silkpay",
       "savingsLabel": "You save",
       "swiftRate": "≈ 7.5% friction",
-      "yuanRate": "≈ 1.8% friction (FX + platform + on/off-ramp)",
+      "silkpayRate": "≈ 1.8% friction (FX + platform + on/off-ramp)",
       "perTransaction": "per transaction"
     },
     "valueProps": {

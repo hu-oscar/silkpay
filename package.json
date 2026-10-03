@@ -1,8 +1,8 @@
 {
-  "name": "yuan-mvp",
+  "name": "silkpay",
   "private": true,
   "version": "0.1.0",
-  "description": "Yuán — Pay China like it's next door. Hackathon MVP monorepo.",
+  "description": "Silkpay — Pay China like it's next door. Hackathon MVP monorepo.",
   "packageManager": "pnpm@10.13.1",
   "scripts": {
     "dev": "turbo run dev",
