@@ -1,8 +1,6 @@
 # Silkpay
 
-> **Pay China like it's next door.** Cross-border B2B payments for the Africa ↔ China corridor — escrowed in USDT on whichever chain the router picks (cost / liquidity / finality optimised), routed through a CVXPY smart-order-router, and onboarded with KYB + Claude Vision document parsing.
-
-Hackathon MVP — single corridor (local currency → USDT → CNY), end-to-end demo of how an African importer pays a Chinese supplier without going through SWIFT.
+> Cross-border B2B payments for the Africa ↔ China corridor — escrowed in USDT on whichever chain the router picks (cost / liquidity / finality optimised), routed through a CVXPY smart-order-router, and onboarded with KYB + AI document parsing.
 
 ---
 
